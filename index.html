@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Circa">
+<meta name="theme-color" content="#2A0710">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&display=swap">
+<title>Circa</title>
+<style>
+/* ── CIRCA Brand-System, Stufe 2 (Oktober 2026) ─────────────────────────── */
+:root{
+  --b950:#2A0710;--b900:#3A0B15;--b800:#4F1522;--b700:#6A2333;
+  --c100:#E6F0FA;--c200:#BFD6EF;--c300:#94AAC6;--c400:#6F86A6;--cream:#F4EEE8;
+  --ph-text:#BFD6EF;--ph-fill:#52303C;--ph-line:#7D7182;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --ui:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;border-radius:0}
+html,body{height:100%;overflow:hidden;background:var(--b900);color:var(--c200);font-family:var(--ui);font-size:17px;line-height:1.45}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button,input,a,summary{touch-action:manipulation}   /* kein Doppeltipp-Zoom, keine 300-ms-Wartezeit */
+#app{height:100%;display:flex;flex-direction:column;overflow:hidden}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:20px max(20px,env(safe-area-inset-right)) 120px max(20px,env(safe-area-inset-left));
+  padding-top:calc(env(safe-area-inset-top,8px) + 12px)}   /* unter Uhrzeit und Notch bleibt Luft */
+.ic{display:block;flex-shrink:0}
+
+/* Typo */
+.disp{font-family:var(--display);font-stretch:125%;font-weight:900;line-height:1;letter-spacing:-.01em}
+.t1{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:28px;line-height:1.1;color:var(--c100)}
+.lbl{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--c300);line-height:1.3}
+.txt{font-size:17px;color:var(--c200)}
+.sub{font-size:14px;color:var(--c300)}
+.tiny{font-size:12px;color:var(--c400)}
+
+/* Raum: 4-pt-Raster, Kartenabstand 8, Innenabstand 16 */
+.card{background:var(--b800);padding:16px}
+.stack>*+*{margin-top:8px}
+.sec{margin-top:24px}
+.sec>.lbl:first-child{margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.line{border-top:2px solid var(--b700)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Buttons · 56 pt */
+.btn,.btn2{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:56px;padding:0 16px;
+  font-size:17px;font-weight:600;transition:background 120ms var(--ease),opacity 120ms var(--ease)}
+.btn{background:var(--c200);color:var(--b900)}
+.btn:active{background:var(--c100)}
+.btn2{border:2px solid var(--c200);color:var(--c200)}
+.btn2:active{background:var(--b700)}
+.btn3{min-height:44px;padding:0 4px;font-size:15px;color:var(--c300);display:inline-flex;align-items:center;gap:6px}
+.btn3:active{color:var(--c100)}
+.center{justify-content:center}
+
+/* Chips · 32 pt */
+.chip{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border:2px solid var(--b700);
+  font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c300)}
+.chip.on{background:var(--c200);border-color:var(--c200);color:var(--b900)}
+.chip.ph{background:var(--ph-fill);border-color:var(--ph-line);color:var(--ph-text)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+button.chip{min-height:44px}
+
+/* Eingaben */
+input{width:100%;min-height:56px;padding:0 16px;background:var(--b800);border:2px solid var(--b700);
+  color:var(--c100);font-family:var(--ui);font-size:17px;outline:none;appearance:none;-webkit-appearance:none}
+input:focus{border-color:var(--c200)}
+input::placeholder,textarea::placeholder{color:var(--c400)}
+textarea{width:100%;padding:12px 16px;background:var(--b900);border:2px solid var(--b700);color:var(--c100);
+  font-family:var(--ui);font-size:16px;outline:none;resize:vertical;-webkit-appearance:none}
+textarea:focus{border-color:var(--c200)}
+input[type=date]{display:block}
+
+.banner{border:2px solid #9D4B56;background:#5D222C;color:#FF8A96;padding:12px 16px;font-size:15px;margin-bottom:16px}
+
+/* Kopf */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;min-height:44px}
+.brand{display:flex;align-items:center;gap:8px;color:var(--c200)}
+.wm{font-size:20px}
+
+/* Heute */
+.hero{display:block;width:100%;text-align:left;background:var(--c200);color:var(--b900);padding:16px}
+.hero .lbl{color:var(--b700)}
+.hero .t1{color:var(--b900);margin:6px 0 16px}
+.hero .go{display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--b900);padding-top:12px;font-weight:600}
+.hero:active{background:var(--c100)}
+.wcard{display:block;width:100%;text-align:left;background:var(--b800);padding:16px;min-height:76px}
+.wcard:active{background:var(--b700)}
+.wcard b{display:block;font-size:15px;font-weight:600;color:var(--c100)}
+.cday{display:flex;align-items:flex-end;gap:10px;margin-top:4px}
+.cday .disp{font-size:clamp(104px,34vw,152px);color:var(--c200);line-height:.85}
+.cday .of{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:15px;color:var(--c300);padding-bottom:6px}
+.bars{display:flex;align-items:flex-end;gap:2px;height:48px;margin-top:20px}
+.bars i{flex:1;background:var(--c300)}
+.bars i.past{background:var(--c400);opacity:.55}
+.bars i.up{background:var(--c200)}
+.bars i.now{background:var(--c100);flex:1.8}
+.bar-lbl{position:relative;height:18px;margin-top:6px}
+.bar-lbl span{position:absolute;top:0;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--c400)}
+.bar-lbl span.on{color:var(--c100)}
+.coach{font-size:20px;font-weight:700;line-height:1.3;color:var(--c100)}
+.wcard.sm{min-height:56px;display:flex;align-items:center}
+.phase{display:flex;gap:16px;align-items:center;background:var(--ph-fill);border-left:4px solid var(--ph-line);padding:16px}
+.phase .lbl{color:var(--ph-text)}
+
+/* Workout – Akkordeon */
+.ex{background:var(--b800);scroll-margin-top:12px}
+.ex-hd{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:16px;min-height:64px}
+.ex-hd .nm{font-size:17px;font-weight:600;color:var(--c100);line-height:1.25}
+.prog{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:14px;color:var(--c400)}
+.prog.full{color:var(--c100)}
+.chev{transition:transform 200ms var(--ease);color:var(--c300)}
+.chev.o{transform:rotate(180deg);color:var(--c200)}
+.ex-bd{padding:0 16px 16px}
+.ex-bd[hidden]{display:none}
+
+/* Satz-Zeile · 64 pt, Haken 64 × 64 */
+.sets-hd,.set{display:grid;grid-template-columns:60px 1fr 1.3fr 64px;align-items:center}
+.sets-hd.one,.set.one{grid-template-columns:60px 1fr 64px}
+.sets-hd{padding:8px 0}
+.set{height:64px;background:var(--b900);margin-bottom:2px;border:2px solid transparent;transition:background 120ms var(--ease)}
+.set .sn{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:13px;color:var(--c400);padding-left:12px}
+.num{min-height:60px;height:60px;padding:0 4px;background:transparent;border:none;
+  font-family:var(--display);font-stretch:125%;font-weight:900;font-size:22px;color:var(--c400)}
+.num:focus{color:var(--c100)}
+.kgcell{display:flex;align-items:center;gap:4px;min-width:0}
+.kgcell .num{flex:1;min-width:0}
+.pr{display:none;background:var(--cream);color:var(--b900);font-size:10px;font-weight:800;letter-spacing:.08em;padding:2px 4px;margin-right:4px}
+.set.done.is-pr .pr{display:inline-block}
+.ck{width:64px;height:60px;display:flex;align-items:center;justify-content:center;border-left:2px solid var(--b700);color:var(--c400);
+  transition:background 120ms var(--ease),color 120ms var(--ease)}
+.set.active{border-color:var(--c200)}
+.set.active .num{color:var(--c200)}
+.set.active .ck{color:var(--c200);border-left-color:var(--c200)}
+.set.done{background:var(--ph-fill)}
+.set.done .num{color:var(--c100)}
+.set.done .ck{background:var(--c200);color:var(--b900);border-left-color:var(--c200)}
+.set-btns{display:flex;justify-content:space-between;margin-top:4px}
+
+.egrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ebtn{min-height:56px;background:var(--b800);border:2px solid var(--b800);font-size:17px;font-weight:600;color:var(--c200)}
+.ebtn.on{background:var(--c200);border-color:var(--c200);color:var(--b900)}
+
+/* Listen */
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:2px solid var(--b700)}
+.row:last-child{border-bottom:none}
+.xbtn{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--c400)}
+.big{font-size:44px;color:var(--c100)}
+
+/* Woche */
+.wday{padding:12px 0;border-bottom:2px solid var(--b700)}
+.wday:last-child{border-bottom:none}
+
+/* Tab-Bar · 49 pt + Safe Area */
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--b950);display:flex;
+  padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);z-index:100}
+.ntb{flex:1;height:49px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:var(--c400)}
+.ntb.on{color:var(--c100);font-weight:700}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════════════════
+// CIRCA – Krafttraining, das mit deinem Zyklus plant.
+// Alles läuft lokal im Browser. Kein Backend, kein Login, keine Kosten.
+// ════════════════════════════════════════════════════════════════════════════
+
+const ROOT_KEY = 'cyclefit.v2';   // bleibt bewusst gleich: ein neuer Key würde vorhandene Daten verwaisen lassen
+const SCHEMA_VERSION = 7;
+const DEFAULT_CYCLE_LEN = 29;
+const DEFAULT_PERIOD_LEN = 5;
+
+// ── PHASEN (Farben laut Brand-System, Seite 14) ─────────────────────────────
+const PH = {
+  menstruation:{text:'#FF8A96',fill:'#5D222C',line:'#9D4B56',lb:'Menstruation',tag:'Sanft',
+    tip:'Tag 1–2 darf’s locker sein. Ab Tag 3 wird trainiert, nach Gefühl.',
+    food:'Eisenreich: Hülsenfrüchte, Spinat, rotes Fleisch',o:['pull','push','glutes']},
+  follikel:{text:'#BFD6EF',fill:'#52303C',line:'#7D7182',lb:'Follikelphase',tag:'Aufbau',
+    tip:'Energie steigt. Jetzt wird schwer gehoben, nicht gekuschelt.',
+    food:'Proteinreich, Ballaststoffe & Fermentiertes',o:['glutes','push','pull']},
+  ovulation:{text:'#F4EEE8',fill:'#5B343B',line:'#977D7F',lb:'Ovulation',tag:'Peak',
+    tip:'Peak-Tage. Wenn ein PR fällt, dann jetzt.',
+    food:'Antioxidantien & Omega-3: Beeren, Lachs, Avocado',o:['glutes','pull','push']},
+  luteal:{text:'#8FA6C4',fill:'#492735',line:'#65596D',lb:'Lutealphase',tag:'Halten',
+    tip:'Lutealphase heißt Gewicht halten, nicht Couch.',
+    food:'Magnesium & komplexe Kohlenhydrate: Nüsse, Hafer, Süßkartoffel',o:['pull','push','glutes']}
+};
+const PH_KEYS = ['menstruation','follikel','ovulation','luteal'];
+
+// ── ÜBUNGSKATALOG (Stand Charlottes Notion-Log, Oktober 2026) ───────────────
+// k: 'w' = Wdh + kg · 'a' = Wdh + kg Unterstützung (weniger = stärker) · 'bw' = nur Wdh · 't' = Zeit
+const DEFAULT_EX = {
+  // Push
+  schulterpresse:{n:'Schulterpresse',k:'w'},
+  brustpresse:{n:'Brustpresse',k:'w'},
+  lateral_raise:{n:'Lateral Raises',k:'w'},
+  schraegbank:{n:'Schrägbankdrücken KH',k:'w'},
+  assisted_dips:{n:'Assisted Dips',k:'a'},
+  triceps_pushdown:{n:'Triceps Pushdown',k:'w'},
+  oblique_marches:{n:'Oblique Crunches + Marches',k:'w'},
+  wood_chopper:{n:'Cable Wood Chopper',k:'w'},
+  bauchmaschine_1:{n:'Bauchmaschine I',k:'w'},
+  bauchmaschine_2:{n:'Bauchmaschine II',k:'w'},
+  heel_touches:{n:'Heel Touches',k:'bw'},
+  // Pull
+  latzug:{n:'Latzug (Lat Pulldown)',k:'w'},
+  rudern_sitzend:{n:'Rudern sitzend',k:'w'},
+  single_arm_cable_row:{n:'Einarm-Kabelrudern',k:'w'},
+  face_pulldowns:{n:'Face Pulls (Seil)',k:'w'},
+  hammer_curls:{n:'Hammer Curls',k:'w'},
+  biceps_curls:{n:'Biceps Curls',k:'w'},
+  assisted_pullups:{n:'Assisted Pull-ups',k:'a'},
+  hyperextensions:{n:'Hyperextensions',k:'bw'},
+  hip_thrusts_leicht:{n:'Hip Thrusts leicht (2 s halten)',k:'w'},
+  // Glutes & Beine
+  hip_thrusts:{n:'Hip Thrusts',k:'w'},
+  rdl:{n:'RDL Kabelturm',k:'w'},
+  rdl_kh:{n:'Romanian Deadlift KH',k:'w'},
+  beinbeuger:{n:'Beinbeuger (Leg Curl)',k:'w'},
+  multihip_kickbacks:{n:'Multi-Hip Kickbacks',k:'w'},
+  abduktion:{n:'Abduktion',k:'w'},
+  step_ups:{n:'Step-ups',k:'w'},
+  barbell_squats:{n:'Barbell Squats',k:'w'},
+  bulgarian_split_squats:{n:'Bulgarian Split Squats',k:'w'},
+  // Core
+  dead_bugs:{n:'Dead Bugs',k:'bw'},
+  alternating_legs:{n:'Alternating Legs',k:'bw'},
+  plank:{n:'Plank',k:'t'}
+};
+
+// ── WORKOUTS (Charlottes Programm seit September 2026) ───────────────────────
+// ex: [id, Sätze, Ziel ('10', '15/10/5/20', '10/Seite'), Alternativen]
+const DEFAULT_WK = {
+  glutes:{lb:'Glutes',dur:60,wu:'Stretching',blocks:[
+    {lb:'Glutes',ex:[
+      ['hip_thrusts',4,'15/10/5/20',['Glute Bridge BB','Cable Kickbacks']],
+      ['rdl',3,'10',['Romanian Deadlift KH','Good Mornings']]]},
+    {lb:'Beine',ex:[
+      ['beinbeuger',3,'10',['Nordic Curls','Step-ups']]]},
+    {lb:'Superset Multi-Hip',ex:[
+      ['multihip_kickbacks',3,'10/Seite',['Cable Donkey Kicks','Band Kickbacks']],
+      ['abduktion',3,'10/Seite',['Cable Hip Abduktion','Band Abduktion']]]}
+  ]},
+  pull:{lb:'Pull',dur:65,wu:'Walking 15 min',blocks:[
+    {lb:'Ziehen',ex:[
+      ['latzug',4,'10',['Latzug eng','Cable Row breit']],
+      ['assisted_pullups',3,'8',['Band Pull-ups','Negative Pull-ups']],
+      ['rudern_sitzend',4,'10',['Einarm-Kabelrudern','TRX Row']]]},
+    {lb:'Superset Kabelzug mit Seil',ex:[
+      ['face_pulldowns',3,'12',['Band Face Pull','Rear Delt Fly Maschine']],
+      ['hammer_curls',3,'12',['Biceps Curls','Cable Curls']]]},
+    {lb:'Glute Pump',ex:[
+      ['hip_thrusts_leicht',2,'15',['Glute Bridge']]]}
+  ]},
+  // Reihenfolge: erst die schweren Drück-Übungen mit frischer Schulter, Lateral Raises zum Schluss
+  push:{lb:'Push',dur:60,wu:'Cardio 15–20 min, moderat',blocks:[
+    {lb:'Drücken',ex:[
+      ['schulterpresse',3,'10',['Schulterpress KH','Arnold Press']],
+      ['brustpresse',4,'10',['Bankdrücken KH','Kabelzug Brust']],
+      ['schraegbank',3,'10',['Schrägbank Maschine']],
+      ['assisted_dips',3,'10',['Bankdips','Triceps Pushdown']]]},
+    {lb:'Schultern',ex:[
+      ['lateral_raise',3,'10',['Cable Lateral Raise']]]},
+    {lb:'Core',ex:[
+      ['oblique_marches',3,'10',[]],
+      ['wood_chopper',3,'10',['Pallof Press']]]}
+  ]}
+};
+
+// ── STARTWERTE ───────────────────────────────────────────────────────────────
+// Gelten nur, solange es für eine Übung keine echte Session gibt. Satz für Satz: [Wdh, kg]
+const BASELINE = {
+  schulterpresse:[[10,5],[10,5],[10,5]],
+  brustpresse:[[10,15],[10,20],[10,25],[10,30]],
+  lateral_raise:[[10,4],[10,4],[10,4]],
+  schraegbank:[[10,4],[10,4],[10,5]],
+  assisted_dips:[[10,42],[10,42],[10,42]],
+  triceps_pushdown:[[10,8],[10,10],[10,11]],
+  oblique_marches:[[10,15],[10,15],[10,15]],
+  wood_chopper:[[10,8],[10,8],[10,8]],
+  bauchmaschine_1:[[10,10],[10,15],[10,20]],
+  bauchmaschine_2:[[10,25],[10,30],[10,40]],
+  heel_touches:[[20,null],[20,null]],
+  latzug:[[10,20],[10,25],[10,30],[10,35]],
+  rudern_sitzend:[[10,20],[10,25],[10,25],[10,30]],
+  single_arm_cable_row:[[10,8],[10,10],[10,11]],
+  face_pulldowns:[[12,16],[12,16],[12,18]],
+  hammer_curls:[[12,6],[12,6],[12,8]],
+  biceps_curls:[[10,5],[10,6],[10,6]],
+  assisted_pullups:[[8,42],[8,42],[8,42]],
+  hyperextensions:[[10,null],[10,null],[10,null]],
+  hip_thrusts_leicht:[[15,50],[15,50]],
+  hip_thrusts:[[15,60],[10,80],[5,100],[20,50]],
+  rdl:[[10,16],[10,16],[10,18]],
+  rdl_kh:[[10,20],[10,20],[10,20],[10,20]],
+  beinbeuger:[[10,15],[10,15],[10,15]],
+  multihip_kickbacks:[[10,50],[10,50],[10,50]],
+  abduktion:[[10,30],[10,30],[10,30]],
+  step_ups:[[10,6],[10,8],[10,8]],
+  barbell_squats:[[8,10],[8,12.5],[8,12.5],[8,15]],
+  bulgarian_split_squats:[[8,15],[8,15],[8,15]],
+  dead_bugs:[[20,null],[20,null],[20,null]],
+  alternating_legs:[[10,null],[10,null]],
+  plank:[[30,null],[30,null]]
+};
+
+// ── IMPORTIERTE SESSIONS (Charlottes Notion-Log ab 15.09.2026, Start des aktuellen Programms) ──
+// Im Log standen Spannen wie „20–35 kg“, keine Einzelsätze. Die Spanne ist über die Sätze verteilt.
+// Datum bei „Day 2/3/7“: aus der Wochenangabe gerechnet (Woche = Mo–So).
+function seedSets(n, reps, kg){
+  const R = Array.isArray(reps) ? reps : [reps, reps];
+  const K = kg == null ? null : Array.isArray(kg) ? kg : [kg, kg];
+  const step = K ? kgStep(K[0], K[1]) : 1;
+  return Array.from({length: n}, (_, i) => ({reps: Math.round(lerp(R[0], R[1], i, n)),
+    kg: K ? Math.round(lerp(K[0], K[1], i, n) / step) * step : null, done: true}));
+}
+function buildSeedSessions(){
+  // [id, Sätze, Wdh | [von, bis], kg | [von, bis]]   oder   [id, [[Wdh, kg], …], Ziel]
+  const W = (date, wid, wl, list) => ({id: 'n' + date.replace(/-/g, ''), src: 'notion', date, wid, wl,
+    phase: null, cycleDay: null, energy: null, startedAt: null, finishedAt: date + 'T12:00:00',
+    ex: list.map(x => {
+      const d = DEFAULT_EX[x[0]];
+      const explicit = Array.isArray(x[1]);
+      const sets = explicit ? x[1].map(([reps, kg]) => ({reps, kg, done: true})) : seedSets(x[1], x[2], x[3]);
+      const target = explicit ? x[2] : Array.isArray(x[2]) ? `${x[2][0]}–${x[2][1]}` : String(x[2]);
+      return {id: x[0], name: d.n, kind: d.k, unit: 'reps', target, sets};
+    })});
+  const A = (date, act, note) => ({id: 'n' + date.replace(/-/g, '') + 'a', src: 'notion', type: 'activity', date,
+    wid: null, wl: act, act, min: null, kcal: null, note: note || null, phase: null, cycleDay: null, energy: null,
+    startedAt: null, finishedAt: date + 'T12:00:00', ex: []});
+  const HIP = ['hip_thrusts', [[15,60],[10,80],[5,100],[20,50]], '15/10/5/20'];
+  return [
+    W('2026-09-15', 'glutes', 'Glutes', [['barbell_squats',4,8,[10,15]], ['hip_thrusts',3,[10,8],[60,80]],
+      ['multihip_kickbacks',3,10,[45,65]], ['abduktion',3,10,[70,80]]]),
+    W('2026-09-16', 'pull', 'Pull', [['latzug',4,10,[20,30]], ['rudern_sitzend',4,10,[20,30]],
+      ['single_arm_cable_row',3,10,10], ['biceps_curls',3,10,[5,6]], ['face_pulldowns',3,10,[8,13]]]),
+    W('2026-09-21', 'glutes', 'Glutes', [HIP, ['rdl_kh',4,10,20], ['step_ups',3,8,[6,8]], ['multihip_kickbacks',3,10,[45,65]]]),
+    A('2026-10-05', 'Laufen', '4,8 km'),
+    W('2026-10-09', 'pull', 'Pull', [['latzug',4,10,[25,35]], ['rudern_sitzend',3,10,[20,30]],
+      ['single_arm_cable_row',3,10,[8,11]], ['hammer_curls',3,10,[5,6]], ['face_pulldowns',3,10,[11,16]]]),
+    W('2026-10-12', 'glutes', 'Glutes', [HIP, ['rdl_kh',4,10,20], ['step_ups',3,10,[6,8]], ['multihip_kickbacks',3,10,[45,65]]]),
+    W('2026-10-14', 'push', 'Push', [['schulterpresse',3,10,5], ['brustpresse',4,10,[15,30]], ['lateral_raise',3,10,4],
+      ['schraegbank',3,10,[4,5]], ['assisted_dips',3,10,42], ['oblique_marches',3,10,15], ['wood_chopper',3,10,8]]),
+    W('2026-10-18', 'pull', 'Pull', [['latzug',4,10,[25,40]], ['rudern_sitzend',3,10,[20,30]],
+      ['face_pulldowns',3,12,[16,18]], ['hammer_curls',3,12,[6,8]], ['hip_thrusts_leicht',2,15,[50,60]]]),
+    A('2026-10-20', 'Yoga'),
+    W('2026-10-24', 'pull', 'Pull', [['latzug',4,10,[20,35]], ['rudern_sitzend',4,10,[20,30]],
+      ['face_pulldowns',3,12,[16,18]], ['hammer_curls',3,12,[6,8]], ['hip_thrusts_leicht',2,15,50]]),
+    W('2026-10-27', 'glutes', 'Glutes', [HIP, ['rdl',3,10,[16,18]], ['beinbeuger',3,10,15],
+      ['multihip_kickbacks',3,10,50], ['abduktion',3,10,30]])
+  ];
+}
+
+// Aktivitäten zum schnellen Eintragen (wie die Workout-Typen der Apple Watch). Eigene kommen dazu.
+const DEFAULT_ACTIVITIES = ['Laufen','Spinning','Radfahren','Walk','Wandern','Yoga','Pilates','Stretching','Schwimmen','HIIT','Tanzen'];
+
+const KIND_LB = {w:'Gewicht', a:'Gewicht mit Unterstützung', bw:'Nur Wiederholungen', t:'Zeit'};
+
+// Code-Format (Blöcke) → gespeichertes Format: eine Übungsliste, Abschnitt pro Übung
+function flattenWorkouts(wk){
+  const out = {};
+  for(const [id, w] of Object.entries(wk)) out[id] = {id, lb: w.lb, dur: w.dur, wu: w.wu,
+    ex: w.blocks.flatMap(b => b.ex.map(([eid, n, target, alts]) => ({id: eid, sets: n, target, alts, sec: b.lb})))};
+  return out;
+}
+
+const DAY_AB = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+const ENERGY = [['muede','Müde'],['okay','Okay'],['gut','Gut'],['stark','Stark']];
+
+// ── ÄHNLICHE NAMEN ERKENNEN ──────────────────────────────────────────────────
+// „hip trust“, „Hip-Thrusts“ und „Hipthrusts“ sind alle Hip Thrusts.
+function normName(s){
+  return String(s).toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]/g, '');
+}
+// Tippfehler-Abstand (Damerau-Levenshtein, vertauschte Buchstaben zählen als 1)
+function editDist(a, b){
+  const d = Array.from({length: a.length + 1}, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for(let j = 1; j <= b.length; j++) d[0][j] = j;
+  for(let i = 1; i <= a.length; i++) for(let j = 1; j <= b.length; j++){
+    const c = a[i-1] === b[j-1] ? 0 : 1;
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + c);
+    if(i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);
+  }
+  return d[a.length][b.length];
+}
+const typoLimit = n => n <= 4 ? 1 : n <= 9 ? 2 : 3;
+// Wie gut passt Suchtext q zum Namen? null = gar nicht. 0 = gleich, kleiner = besser.
+function matchScore(q, name){
+  const a = normName(q), b = normName(name);
+  if(!a) return null;
+  if(a === b) return 0;
+  if(b.startsWith(a)) return 1;
+  if(b.includes(a) && a.length >= 3) return 2;
+  const d = Math.min(editDist(a, b), a.length < b.length ? editDist(a, b.slice(0, a.length)) + 1 : 99);
+  return d <= typoLimit(Math.min(a.length, b.length)) ? 2 + d : null;
+}
+// Bester ähnlicher Eintrag (Tippfehler, andere Schreibweise), aber nicht exakt gleich
+function findSimilar(q, names){
+  const a = normName(q);
+  let best = null;
+  for(const n of names){
+    const b = normName(n); if(!b) continue;
+    const d = editDist(a, b);
+    if(d <= typoLimit(Math.min(a.length, b.length)) && (!best || d < best.d)) best = {name: n, d};
+  }
+  return best;
+}
+
+// ── ICONS (Lucide, 2-pt-Strich, 24er-Raster) ─────────────────────────────────
+const IC = {
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  chevron:'<path d="m6 9 6 6 6-6"/>',
+  plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  minus:'<path d="M5 12h14"/>',
+  arrowR:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  arrowL:'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+  x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+};
+const icon = (n, s = 24) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+// Bildzeichen: Kreis r 20, Strich 9 auf 64, Öffnung 90° nach rechts, Block 12 × 12 in der Öffnung
+const mark = (s = 28) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M46.14 17.86A20 20 0 1 0 46.14 46.14" fill="none" stroke="currentColor" stroke-width="9"/>
+  <rect x="46" y="26" width="12" height="12" fill="currentColor"/></svg>`;
+
+// ════════════════════════════════════════════════════════════════════════════
+// SPEICHER – ein versionierter Root-Key, jede Schema-Änderung mit Migration
+// ════════════════════════════════════════════════════════════════════════════
+const clone = o => JSON.parse(JSON.stringify(o));
+
+function freshState(){
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    createdAt: new Date().toISOString(),
+    cycle: {periods: [], lens: {}}, // Startdaten der Perioden ('YYYY-MM-DD', sortiert), Länge je Start aus Health
+    weekPlan: null,                // {key: Montag 'YYYY-MM-DD', days: {date: wid}}
+    baseline: clone(BASELINE),
+    exercises: clone(DEFAULT_EX),               // id → {n: Name, k: Art}
+    workouts: flattenWorkouts(DEFAULT_WK),      // id → {id, lb, dur, wu, ex:[{id, sets, target, alts, sec}]}
+    activityTypes: [...DEFAULT_ACTIVITIES],
+    sessions: buildSeedSessions(), // abgeschlossene Workouts (Satz für Satz) und Aktivitäten (type 'activity'), chronologisch
+    active: null,                  // laufendes Workout (Draft)
+    meta: {lastBackup: null, lastSync: null},
+    ui: {tab: 'home', lastSessionId: null}
+  };
+}
+
+// MIGRATIONS[n] hebt Daten von Version n auf n+1
+const MIGRATIONS = {
+  // v2 → v3: Plan aus Notion (Push/Pull/Glutes). Startwerte ersetzen, Sessions bleiben unangetastet,
+  // Wochenplan-Einträge alter Workouts fallen weg, ein laufender Draft bleibt (er trägt seinen Aufbau selbst).
+  2: d => {
+    d.baseline = clone(BASELINE);
+    if(d.weekPlan?.days) for(const k of Object.keys(d.weekPlan.days)) if(!DEFAULT_WK[d.weekPlan.days[k]]) delete d.weekPlan.days[k];
+    d.schemaVersion = 3;
+    return d;
+  },
+  // v3 → v4: Workouts, Übungen und Aktivitätstypen leben jetzt in den Daten, damit Charlotte sie selbst
+  // anlegen und ändern kann. Startbestand = bisheriger Plan. Sessions bleiben unverändert.
+  3: d => {
+    d.exercises = clone(DEFAULT_EX);
+    d.workouts = flattenWorkouts(DEFAULT_WK);
+    d.activityTypes = [...DEFAULT_ACTIVITIES];
+    d.schemaVersion = 4;
+    return d;
+  },
+  // v4 → v5: Apple Health. Periodenlänge pro Start (aus Health) und Zeitpunkt des letzten Syncs.
+  4: d => {
+    d.cycle = {lens: {}, ...d.cycle};
+    d.meta = {lastSync: null, ...d.meta};
+    d.schemaVersion = 5;
+    return d;
+  },
+  // v5 → v6: Charlottes überarbeitetes Programm (Glutes/Pull/Push), neuer Übungskatalog,
+  // Startwerte Satz für Satz, Notion-Sessions ab 15.09.2026 als Historie (nur wenn noch leer).
+  // Spinning und Active Recovery fallen als Workouts weg, dafür gibt es „Andere Aktivität“.
+  5: d => {
+    d.exercises = {...d.exercises, ...clone(DEFAULT_EX)};
+    const fresh = flattenWorkouts(DEFAULT_WK);
+    for(const id of Object.keys(fresh)) d.workouts[id] = fresh[id];
+    for(const id of ['spinning', 'recovery']) delete d.workouts[id];
+    for(const id of ['spinning', 'yin_yoga', 'walk', 'stretching'])
+      if(!Object.values(d.workouts).some(w => w.ex.some(e => e.id === id))) delete d.exercises[id];
+    if(d.weekPlan?.days) for(const k of Object.keys(d.weekPlan.days)) if(!d.workouts[d.weekPlan.days[k]]) delete d.weekPlan.days[k];
+    d.baseline = clone(BASELINE);
+    if(!d.sessions.length) d.sessions = buildSeedSessions();
+    d.schemaVersion = 6;
+    return d;
+  },
+  // v6 → v7: Coach-Anpassung vor dem ersten Deployment: Assisted Pull-ups im Pull, Push-Reihenfolge.
+  // Überschreibt nur push und pull, eigene Workouts bleiben.
+  6: d => {
+    const fresh = flattenWorkouts(DEFAULT_WK);
+    d.workouts.push = fresh.push; d.workouts.pull = fresh.pull;
+    d.schemaVersion = 7;
+    return d;
+  }
+};
+
+function migrate(data){
+  let v = data.schemaVersion || 0;
+  if(v > SCHEMA_VERSION) throw new Error('Daten stammen aus einer neueren App-Version');
+  while(v < SCHEMA_VERSION){
+    if(!MIGRATIONS[v]) throw new Error('Keine Migration von Version ' + v);
+    data = MIGRATIONS[v](data); v = data.schemaVersion;
+  }
+  const base = freshState();
+  for(const k of Object.keys(base)) if(data[k] === undefined) data[k] = base[k];
+  return data;
+}
+
+let S;
+let storageError = null;
+
+function load(){
+  let raw = null;
+  try { raw = localStorage.getItem(ROOT_KEY); }
+  catch(e){ storageError = 'Dein Browser blockiert den Speicher (privater Modus?). Nichts wird gesichert.'; }
+  if(!raw){ S = freshState(); return; }
+  try { S = migrate(JSON.parse(raw)); }
+  catch(e){
+    // Kaputte Daten nie überschreiben: Kopie wegsichern, dann frisch starten
+    try { localStorage.setItem(ROOT_KEY + '.kaputt.' + Date.now(), raw); } catch(_){}
+    storageError = 'Gespeicherte Daten waren beschädigt. Eine Kopie liegt sicher, die App startet frisch.';
+    S = freshState();
+  }
+}
+
+let saveTimer = null;
+function saveNow(){
+  clearTimeout(saveTimer); saveTimer = null;
+  try {
+    localStorage.setItem(ROOT_KEY, JSON.stringify(S));
+    if(storageError && storageError.startsWith('Speichern')){ storageError = null; renderBanner(); }
+  } catch(e){
+    storageError = 'Speichern hat nicht geklappt (Speicher voll?). Sag Bescheid, bevor du weiter loggst.';
+    renderBanner();
+  }
+}
+function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 300); }
+
+// App wird geschlossen oder in den Hintergrund geschoben → sofort sichern
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') saveNow(); });
+window.addEventListener('pagehide', saveNow);
+
+// ════════════════════════════════════════════════════════════════════════════
+// HELFER
+// ════════════════════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// Tage zwischen zwei 'YYYY-MM-DD' in UTC → keine Sommerzeit-Fehler
+function dayNum(s){ const [y,m,d] = s.split('-').map(Number); return Date.UTC(y, m-1, d) / 86400000; }
+const daysBetween = (a, b) => dayNum(b) - dayNum(a);
+function fmtDate(s, opts = {day:'2-digit', month:'2-digit', year:'numeric'}){
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('de-DE', opts);
+}
+
+// "82,5" und "82.5" → 82.5; leer/ungültig → null
+function parseNum(str){
+  const s = String(str ?? '').trim().replace(',', '.');
+  if(s === '') return null;
+  const n = Number(s);
+  return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
+}
+const fmtNum = n => n == null ? '' : String(n).replace('.', ',');
+
+function rangeStr(vals){
+  const v = vals.filter(x => x != null);
+  if(!v.length) return '';
+  const lo = Math.min(...v), hi = Math.max(...v);
+  return lo === hi ? fmtNum(lo) : `${fmtNum(lo)}–${fmtNum(hi)}`;
+}
+
+// '8–10' → {min 8, max 10, unit 'reps'} · '30s' → 's' · '45–50 min' → 'min'
+function parseTarget(t){
+  const nums = (String(t).match(/\d+/g) || []).map(Number);
+  const unit = /min/.test(t) ? 'min' : /\d\s*s\b/.test(t) ? 's' : 'reps';
+  return {min: nums[0] ?? null, max: nums[1] ?? nums[0] ?? null, unit};
+}
+const unitLabel = u => u === 's' ? 'Sek' : u === 'min' ? 'Min' : 'Wdh';
+
+function monDate(d){
+  const t = new Date(d); t.setHours(12, 0, 0, 0);
+  const dw = t.getDay(); t.setDate(t.getDate() - (dw === 0 ? 6 : dw - 1)); return t;
+}
+const wkKey = () => ymd(monDate(new Date()));
+function weekDates(){
+  const m = monDate(new Date());
+  return Array.from({length: 7}, (_, i) => { const d = new Date(m); d.setDate(m.getDate() + i); return ymd(d); });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// ZYKLUS
+// ════════════════════════════════════════════════════════════════════════════
+function cycleStats(){
+  const p = [...new Set(S.cycle.periods)].sort();
+  // nur plausible Abstände (18–45 Tage), sonst verfälscht ein vergessener Eintrag den Schnitt
+  const gaps = [];
+  for(let i = 1; i < p.length; i++){
+    const g = daysBetween(p[i-1], p[i]);
+    if(g >= 18 && g <= 45) gaps.push(g);
+  }
+  const len = gaps.length ? Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length) : DEFAULT_CYCLE_LEN;
+  // Periodenlänge aus Health, sobald es abgeschlossene Perioden gibt
+  const lens = p.map(s => S.cycle.lens?.[s]).filter(n => n >= 2 && n <= 10);
+  const periodLen = lens.length ? Math.round(lens.reduce((a, b) => a + b, 0) / lens.length) : DEFAULT_PERIOD_LEN;
+  return {len, periodLen, n: gaps.length, nLens: lens.length, periods: p};
+}
+
+// Phasengrenzen skalieren mit der Zykluslänge: Eisprung ≈ Länge − 14
+function phaseRanges(L, P){
+  const ov = Math.max(L - 14, P + 3);
+  return {menstruation: [1, P], follikel: [P + 1, ov - 2], ovulation: [ov - 1, ov + 1], luteal: [ov + 2, L]};
+}
+
+function getPhase(date = today()){
+  const st = cycleStats();
+  const start = [...st.periods].reverse().find(p => p <= date);
+  if(!start) return null;
+  const cd = daysBetween(start, date) + 1;
+  const L = st.len, P = st.periodLen;
+  if(cd > L + 10) return {stale: true, cd, start};      // Eintrag zu alt, lieber nachfragen
+  const R = phaseRanges(L, P);
+  const key = PH_KEYS.find(k => cd >= R[k][0] && cd <= R[k][1]) || 'luteal';
+  return {key, cd, len: L, start, ranges: R, overdue: cd > L, left: L - cd, ...PH[key]};
+}
+
+function addPeriod(date){
+  if(!date || date > today() || S.cycle.periods.includes(date)) return false;
+  S.cycle.periods.push(date); S.cycle.periods.sort();
+  saveNow(); return true;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// APPLE HEALTH – optionaler Import per Text aus dem iOS-Kurzbefehl „Circa Sync“
+// Hauptweg ist der Button „Periode gestartet“. Dieser Import bleibt als Reserve
+// (Textfeld unter „Einträge“ im Zyklus-Screen), falls Charlotte ihn doch nutzen will.
+//
+// Format, eine Angabe pro Zeile, Reihenfolge egal:
+//   2026-09-05                     → Tag mit Periode (alle Tage, Circa findet die Starts)
+//   W;2026-10-05 18:02;Laufen;32 min;280 kcal   → Watch-Workout: Start;Typ;Dauer;Energie
+// ════════════════════════════════════════════════════════════════════════════
+
+// Apple-Workout-Typen (deutsch und englisch) → Circa-Aktivität
+const WATCH_TYPES = {
+  Krafttraining: ['traditional strength training','functional strength training','traditionelles krafttraining','funktionelles krafttraining','krafttraining','strength training'],
+  Spinning: ['indoor cycling','indoor-radfahren','indoor radfahren','spinning'],
+  Laufen: ['running','laufen','outdoor run','indoor run','lauf drinnen','lauf draussen'],
+  Radfahren: ['cycling','radfahren','outdoor cycling','rad fahren'],
+  Walk: ['walking','gehen','outdoor walk','indoor walk','spazierengehen'],
+  Wandern: ['hiking','wandern'],
+  Yoga: ['yoga'],
+  Pilates: ['pilates'],
+  Stretching: ['flexibility','beweglichkeit','stretching','cooldown','abkuehlen'],
+  Schwimmen: ['swimming','schwimmen','pool swim','beckenschwimmen'],
+  HIIT: ['hiit','high intensity interval training','hochintensives intervalltraining'],
+  Tanzen: ['dance','tanzen','cardio dance']
+};
+
+// Datum in allen Formen, die der Kurzbefehl ohne Extra-Einstellung liefert:
+// 2026-10-05 · 05.10.2026 · Oct 5, 2026 · 5 Oct 2026 · 5. Okt. 2026
+const MONTHS = {jan:1, feb:2, mar:3, 'mär':3, apr:4, may:5, mai:5, jun:6, jul:7, aug:8, sep:9, oct:10, okt:10, nov:11, dec:12, dez:12};
+const MON = '(jan|feb|m[aä]r|apr|ma[iy]|jun|jul|aug|sep|o[ck]t|nov|de[cz])[a-zäöü]*\\.?';
+const DATE_RE = new RegExp(`\\d{4}-\\d{2}-\\d{2}|\\d{1,2}\\.\\d{1,2}\\.\\d{4}|${MON}\\s+\\d{1,2},?\\s+\\d{4}|\\d{1,2}\\.?\\s+${MON}\\s+\\d{4}`, 'gi');
+function isoDate(s){
+  s = String(s);
+  let m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m = s.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  if(m) return `${m[3]}-${pad(m[2])}-${pad(m[1])}`;
+  const mon = t => MONTHS[t.toLowerCase().slice(0, 3)];
+  m = s.match(new RegExp(`${MON}\\s+(\\d{1,2}),?\\s+(\\d{4})`, 'i'));       // Oct 5, 2026
+  if(m && mon(m[1])) return `${m[3]}-${pad(mon(m[1]))}-${pad(m[2])}`;
+  m = s.match(new RegExp(`(\\d{1,2})\\.?\\s+${MON}\\s+(\\d{4})`, 'i'));     // 5 Oct 2026
+  if(m && mon(m[2])) return `${m[3]}-${pad(mon(m[2]))}-${pad(m[1])}`;
+  return null;
+}
+
+// "32 min", "0:32:10", "1920" (Sekunden), "1,5 Std." → Minuten
+function parseDuration(s){
+  s = String(s ?? '').trim();
+  const hms = s.match(/^(\d+):(\d{1,2})(?::(\d{1,2}))?$/);
+  if(hms) return hms[3] !== undefined ? +hms[1] * 60 + +hms[2] + +hms[3] / 60 : +hms[1] + +hms[2] / 60;
+  const n = parseLooseNum(s);
+  if(n == null) return null;
+  if(/std|\bh\b|hr|hour/i.test(s)) return n * 60;
+  if(/min/i.test(s)) return n;
+  if(/\bs\b|sek|sec/i.test(s)) return n / 60;
+  return n > 300 ? n / 60 : n;   // nackte Zahl: große Werte sind Sekunden
+}
+
+// Zahl aus Health-Text: deutsch ("410,5") und englisch ("1,050" = tausend) lesen
+function parseLooseNum(s){
+  const m = String(s ?? '').match(/\d[\d.,]*/); if(!m) return null;
+  let t = m[0].replace(/[.,]$/, '');
+  if(/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)) t = t.replace(/,/g, '');        // 1,050 / 1,050.5
+  else if(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, '');  // 1.050 / 1.050,5
+  return parseNum(t);
+}
+
+function parseHealthText(txt){
+  const days = new Set(), workouts = [];
+  for(const raw of String(txt).split(/\r?\n/)){
+    const line = raw.trim(); if(!line) continue;
+    if(/^W;/i.test(line)){
+      const [, dt = '', type = '', dur = '', kcal = ''] = line.split(';').map(x => x.trim());
+      const date = isoDate(dt); if(!date || !type) continue;
+      const tm = dt.match(/(\d{1,2}):(\d{2})/);
+      workouts.push({date, time: tm ? `${pad(tm[1])}:${tm[2]}` : '', type,
+        min: Math.round(parseDuration(dur) || 0) || null,
+        kcal: Math.round(parseLooseNum(kcal) || 0) || null});
+      continue;
+    }
+    for(const m of line.matchAll(DATE_RE)){ const d = isoDate(m[0]); if(d) days.add(d); }
+  }
+  return {days: [...days].sort(), workouts};
+}
+
+// Periodentage → Starts. Tage mit ≤ 2 Tagen Lücke gehören zur selben Periode.
+// Blutung früher als 15 Tage nach einem Start ist Schmierblutung, keine neue Periode.
+function periodsFromDays(days){
+  const out = []; let cur = null;
+  for(const d of days){
+    if(cur && daysBetween(cur.last, d) <= 2) cur.last = d;
+    else if(!cur || daysBetween(cur.start, d) >= 15){ cur = {start: d, last: d}; out.push(cur); }
+  }
+  return out;
+}
+
+function mapWatchType(t){
+  const n = normName(t);
+  for(const [name, al] of Object.entries(WATCH_TYPES)) if(al.some(a => normName(a) === n)) return name;
+  const own = S.activityTypes.find(a => normName(a) === n) || findSimilar(t, S.activityTypes)?.name;
+  return own || t.trim();
+}
+
+function applyHealth(data){
+  const res = {periods: 0, acts: 0, enriched: 0};
+  for(const p of periodsFromDays(data.days)){
+    // manueller Eintrag in der Nähe (±3 Tage) wird durch den Health-Wert ersetzt
+    const near = S.cycle.periods.find(x => Math.abs(daysBetween(x, p.start)) <= 3);
+    if(near !== p.start){
+      if(near){ S.cycle.periods = S.cycle.periods.filter(x => x !== near); delete S.cycle.lens[near]; }
+      else res.periods++;
+      S.cycle.periods.push(p.start);
+    }
+    // Länge nur von abgeschlossenen Perioden übernehmen, nicht von der laufenden
+    if(daysBetween(p.last, today()) > 2) S.cycle.lens[p.start] = daysBetween(p.start, p.last) + 1;
+  }
+  S.cycle.periods = [...new Set(S.cycle.periods)].sort();
+
+  for(const w of data.workouts){
+    const key = `watch:${w.date} ${w.time}|${normName(w.type)}`;
+    if(S.sessions.some(s => s.src === key || s.watchSrc === key)) continue;
+    const act = mapWatchType(w.type);
+    // Krafttraining am selben Tag wie ein Circa-Workout: Watch-Daten dranhängen statt doppelt zählen
+    if(act === 'Krafttraining'){
+      const s = S.sessions.find(s => s.type !== 'activity' && s.date === w.date && !s.watchSrc);
+      if(s){ s.watchSrc = key; s.watchMin = w.min; s.watchKcal = w.kcal; res.enriched++; continue; }
+    }
+    if(!S.activityTypes.includes(act)) S.activityTypes.push(act);
+    const ph = getPhase(w.date);
+    addSession({id: 'h' + Date.now() + res.acts, type: 'activity', src: key, date: w.date, wid: null, wl: act, act,
+      min: w.min, kcal: w.kcal, phase: ph && !ph.stale ? ph.key : null, cycleDay: ph && !ph.stale ? ph.cd : null,
+      energy: null, startedAt: null, finishedAt: `${w.date}T${w.time || '12:00'}:00`, ex: []});
+    res.acts++;
+  }
+  S.meta.lastSync = new Date().toISOString();
+  saveNow();
+  return res;
+}
+
+let flash = null;   // einmalige Rückmeldung oben im Zyklus-Screen
+
+function handleSyncText(txt){
+  const data = parseHealthText(txt);
+  if(!data.days.length && !data.workouts.length){
+    flash = 'Im eingefügten Text war nichts für Circa. Lief vorher der Kurzbefehl „Circa Sync“?';
+    render(); return;
+  }
+  const r = applyHealth(data), ph = getPhase(), st = cycleStats();
+  const parts = [];
+  if(data.days.length) parts.push(ph && !ph.stale
+    ? `Zyklus aktualisiert: Tag ${ph.cd}, Ø ${st.len} Tage aus ${st.n} ${st.n === 1 ? 'Zyklus' : 'Zyklen'}.`
+    : 'Perioden übernommen.');
+  if(r.acts) parts.push(`${r.acts} Watch-Workout${r.acts > 1 ? 's' : ''} neu in der Historie.`);
+  if(r.enriched) parts.push(`${r.enriched}× Watch-Daten an dein Circa-Workout gehängt.`);
+  if(!r.acts && !r.enriched && data.workouts.length) parts.push('Watch-Workouts waren schon alle da.');
+  flash = parts.join(' ');
+  S.ui.tab = 'cycle'; render();
+}
+
+// Zyklusring: vier Phasenbögen, ein Block markiert heute
+function ringSVG(ph, size){
+  const c = 60, r = 50, L = ph.len, out = [];
+  for(const k of PH_KEYS){
+    const [a, b] = ph.ranges[k];
+    if(b < a) continue;
+    const cur = k === ph.key && !ph.overdue;
+    out.push(`<circle cx="${c}" cy="${c}" r="${r}" fill="none" pathLength="${L}" stroke="${cur ? PH[k].text : PH[k].line}"
+      stroke-width="${cur ? 8 : 4}" stroke-dasharray="${b - a + 1 - 0.35} ${L}" stroke-dashoffset="${-(a - 1)}"
+      transform="rotate(-90 ${c} ${c})"/>`);
+  }
+  const ang = (Math.min(ph.cd, L) - 0.5) / L * 2 * Math.PI - Math.PI / 2;
+  const x = c + r * Math.cos(ang), y = c + r * Math.sin(ang);
+  out.push(`<rect x="${(x - 6).toFixed(1)}" y="${(y - 6).toFixed(1)}" width="12" height="12" fill="var(--c100)"/>`);
+  out.push(`<text x="${c}" y="${c + 9}" text-anchor="middle" fill="var(--c100)" font-family="Archivo,sans-serif"
+    font-stretch="125%" font-weight="900" font-size="28" style="font-stretch:125%">${pad(ph.cd)}</text>`);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-label="Zyklustag ${ph.cd} von ${L}" style="flex-shrink:0">${out.join('')}</svg>`;
+}
+
+// Zyklus-Balken: ein Balken pro Tag, Höhe folgt der typischen Leistungskurve
+// (niedrig in der Periode, steigend bis zum Eisprung, abfallend in der Lutealphase).
+// Vergangene Tage gedimmt, heute hell, Phasen-Labels unter dem Phasenstart.
+function cycleBars(ph){
+  const L = Math.max(ph.len, ph.cd), R = ph.ranges, ov = R.ovulation[0] + 1;
+  const h = d => {
+    if(d <= R.menstruation[1]) return .32;
+    if(d < ov) return .38 + .62 * (d - R.menstruation[1]) / Math.max(1, ov - R.menstruation[1]);
+    if(d <= R.ovulation[1]) return 1;
+    return Math.max(.4, .78 - .38 * (d - R.ovulation[1]) / Math.max(1, ph.len - R.ovulation[1]));
+  };
+  const keyOf = d => PH_KEYS.find(k => d >= R[k][0] && d <= R[k][1]) || 'luteal';
+  const bars = Array.from({length: L}, (_, i) => {
+    const d = i + 1, k = keyOf(d);
+    const cls = d === ph.cd ? 'now' : d < ph.cd ? 'past' : (k === 'follikel' || k === 'ovulation') ? 'up' : 'down';
+    return `<i class="${cls}" style="height:${Math.round(h(d) * 100)}%"></i>`;
+  }).join('');
+  const tags = {menstruation:'Mens', follikel:'Foll', ovulation:'Ov', luteal:'Luteal'};
+  const labels = PH_KEYS.filter(k => R[k][1] >= R[k][0]).map(k =>
+    `<span class="${k === ph.key ? 'on' : ''}" style="left:${((R[k][0] - 1) / L * 100).toFixed(2)}%">${tags[k]}</span>`).join('');
+  return `<div class="bars" aria-hidden="true">${bars}</div><div class="bar-lbl">${labels}</div>`;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// WORKOUT-DRAFT
+// ════════════════════════════════════════════════════════════════════════════
+function lastDoneSets(id){
+  for(let i = S.sessions.length - 1; i >= 0; i--){
+    const x = S.sessions[i].ex.find(e => e.id === id);
+    if(x){ const d = x.sets.filter(s => s.done); if(d.length) return {sets: d, count: x.sets.length, date: S.sessions[i].date}; }
+  }
+  return null;
+}
+
+// Bestwert aus allen abgeschlossenen Sessions (bei Unterstützung: das niedrigste Gewicht)
+function bestKg(id, kind){
+  let best = null;
+  for(const s of S.sessions) for(const x of s.ex) if(x.id === id) for(const st of x.sets){
+    if(!st.done || st.kg == null) continue;
+    if(best == null || (kind === 'a' ? st.kg < best : st.kg > best)) best = st.kg;
+  }
+  return best;
+}
+
+// Schrittweite passend zu den Startwerten (Kabelturm hat 1,25er-Stufen)
+function kgStep(a, b){
+  const ok = s => [a, b].every(v => Math.abs(v / s - Math.round(v / s)) < 1e-9);
+  return ok(2.5) ? 2.5 : ok(1.25) ? 1.25 : 0.5;
+}
+const lerp = (a, b, i, n) => n < 2 ? a : a + (b - a) * i / (n - 1);
+const mkSet = (reps, kg) => ({reps: reps ?? null, kg: kg ?? null, done: false, touched: false});
+
+// Vorbelegung: letzte echte Session > Startwerte > Plan. Der Normalfall braucht null Tipperei.
+function planSets(id, nPlan, target){
+  const last = lastDoneSets(id);
+  if(last) return Array.from({length: last.count}, (_, i) => {
+    const s = last.sets[Math.min(i, last.sets.length - 1)]; return mkSet(s.reps, s.kg);
+  });
+  const b = S.baseline[id];
+  if(b && b.length){
+    // Satzanzahl aus dem Plan (kann im Editor geändert sein), Werte aus den Startwerten
+    return Array.from({length: nPlan}, (_, i) => { const [r, k] = b[Math.min(i, b.length - 1)]; return mkSet(r, k); });
+  }
+  const t = parseTarget(target);
+  return Array.from({length: nPlan}, () => mkSet(t.max, null));
+}
+
+// Sessions bleiben chronologisch, auch wenn etwas nachgetragen wird
+function addSession(s){
+  S.sessions.push(s);
+  S.sessions.sort((a, b) => a.date.localeCompare(b.date) || (a.finishedAt || '').localeCompare(b.finishedAt || ''));
+}
+
+function newSession(wid){
+  const wk = S.workouts[wid], ph = getPhase();
+  const ex = [], blocks = [];
+  for(const e of wk.ex){
+    const def = S.exercises[e.id]; if(!def) continue;
+    ex.push({id: e.id, name: def.n, kind: def.k, target: e.target, unit: parseTarget(e.target).unit,
+      alts: e.alts || [], sets: planSets(e.id, e.sets, e.target)});
+    // aufeinanderfolgende Übungen mit gleichem Abschnitt bilden einen Block
+    const sec = e.sec || 'Übungen', last = blocks[blocks.length - 1];
+    if(last && last.lb === sec) last.ex.push(ex.length - 1); else blocks.push({lb: sec, ss: false, ex: [ex.length - 1]});
+  }
+  return {
+    wid, wl: wk.lb, wu: wk.wu || null, date: today(), startedAt: new Date().toISOString(),
+    phase: ph && !ph.stale ? ph.key : null, cycleDay: ph && !ph.stale ? ph.cd : null,
+    energy: null, open: [0], scroll: 0, blocks, ex
+  };
+}
+
+const hasKg = x => x.kind === 'w' || x.kind === 'a';
+
+// „4× 10 @ 80–100 kg“ · Pyramiden Satz für Satz: „4× 15/10/5/20 @ 60/80/100/50 kg“
+function setsStr(x, sets){
+  const reps = sets.map(s => s.reps), kgs = sets.map(s => s.kg);
+  const pyramid = sets.length <= 5 && new Set(reps.filter(v => v != null)).size > 1;
+  const r = pyramid ? reps.map(v => fmtNum(v) || '–').join('/') : rangeStr(reps);
+  let out = `${sets.length}×${r ? ' ' + r : ''}${x.unit !== 'reps' ? ' ' + unitLabel(x.unit) : ''}`;
+  if(hasKg(x)){
+    const k = pyramid ? kgs.map(v => fmtNum(v) || '–').join('/') : rangeStr(kgs);
+    if(k && k !== '–') out += ` @ ${k} kg${x.kind === 'a' ? ' Hilfe' : ''}`;
+  }
+  return out;
+}
+function exSummary(x){
+  const done = x.sets.filter(s => s.done);
+  return done.length ? `Geschafft: ${setsStr(x, done)}` : `Heute: ${setsStr(x, x.sets)}`;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// RENDERING
+// ════════════════════════════════════════════════════════════════════════════
+function applyPhColors(){
+  const ph = getPhase(), r = document.documentElement.style;
+  const p = ph && !ph.stale ? ph : PH.follikel;
+  r.setProperty('--ph-text', p.text); r.setProperty('--ph-fill', p.fill); r.setProperty('--ph-line', p.line);
+}
+
+function go(tab){ S.ui.tab = tab; flash = null; saveSoon(); render(); }
+
+const TABS = [['home','Heute'],['week','Woche'],['cycle','Zyklus'],['history','Historie']];
+
+function render(){
+  applyPhColors();
+  const tab = S.ui.tab;
+  $('app').innerHTML = `<div id="M" class="scroll"><div id="banner"></div><div id="C"></div></div>`;
+  ({home: rHome, week: rWeek, cycle: rCycle, history: rHistory, workout: rWorkout, done: rDone,
+    wkedit: rEditor, activity: rActivity, session: rSession}[tab] || rHome)($('C'));
+  renderBanner();
+  if(tab !== 'done'){
+    const cur = {workout: 'home', activity: 'home', wkedit: 'week', session: 'history'}[tab] || tab;
+    $('app').insertAdjacentHTML('beforeend', `<nav>${TABS.map(([id, lb]) =>
+      `<button class="ntb${cur === id ? ' on' : ''}" data-act="go" data-v="${id}">${lb}</button>`).join('')}</nav>`);
+  }
+  const M = $('M');
+  if(tab === 'workout' && S.active){
+    M.scrollTop = S.active.scroll || 0;
+    M.addEventListener('scroll', () => { if(S.active){ S.active.scroll = M.scrollTop; saveSoon(); } }, {passive: true});
+  }
+}
+
+function renderBanner(){
+  const b = $('banner'); if(!b) return;
+  b.innerHTML = storageError ? `<div class="banner">${esc(storageError)}</div>` : '';
+}
+
+const topBar = right => `<div class="top"><div class="brand">${mark(28)}<span class="disp wm">CIRCA</span></div>${right || ''}</div>`;
+
+// ── HEUTE ────────────────────────────────────────────────────────────────────
+function periodAskCard(text){
+  return `<div class="card sec">
+    <p class="lbl" style="margin-bottom:8px">Zyklus</p>
+    <p class="txt" style="color:var(--c100);margin-bottom:4px">${text}</p>
+    <p class="sub" style="margin-bottom:16px">Erster Tag deiner letzten Periode. Steht in Health unter Cycle Tracking.</p>
+    <input type="date" id="pdi" value="${today()}" max="${today()}">
+    <button class="btn" style="margin-top:8px" data-act="addPeriodInput">Speichern ${icon('arrowR')}</button>
+  </div>`;
+}
+
+function rHome(el){
+  const ph = getPhase(), td = today();
+  const plan = S.weekPlan && S.weekPlan.key === wkKey() ? S.weekPlan.days : {};
+  const a = S.active;
+  const okPh = ph && !ph.stale;
+
+  // Ein Satz, das Wichtigste zuerst. Der echte Coach-Satz kommt mit der Coach-Engine.
+  const lastS = S.sessions[S.sessions.length - 1];
+  const coach = okPh && ph.overdue ? 'Periode überfällig? Kurz in Health checken.'
+    : lastS && daysBetween(lastS.date, td) >= 10 ? 'Da bist du ja wieder. Los geht’s.'
+    : okPh ? ph.tip : 'Erst der Zyklus, dann die Gewichte. Zehn Sekunden, versprochen.';
+
+  let phHTML;
+  if(!ph) phHTML = periodAskCard('Wann hat deine letzte Periode angefangen?');
+  else if(ph.stale) phHTML = periodAskCard(`Dein letzter Eintrag ist ${ph.cd - 1} Tage her. Wann war die letzte Periode?`);
+  else phHTML = `
+    <p class="lbl" style="color:var(--ph-text)">${ph.lb}${ph.overdue ? ' · überfällig?' : ''}</p>
+    <div class="cday"><span class="disp">${pad(ph.cd)}</span><span class="of">/ ${ph.len}</span></div>
+    ${cycleBars(ph)}`;
+
+  // Wochenplan zuerst, dann Phasen-Empfehlung
+  const planned = plan[td];
+  const W = S.workouts;
+  const order = [...new Set([planned, ...(okPh ? ph.o : ['push','pull','glutes']), ...Object.keys(W)].filter(w => w && W[w]))];
+  const first = order[0], rest = order.slice(1);
+
+  const resume = a ? (() => {
+    const all = a.ex.reduce((n, x) => n + x.sets.length, 0), dn = a.ex.reduce((n, x) => n + x.sets.filter(s => s.done).length, 0);
+    return `<button class="hero sec" data-act="resume">
+      <p class="lbl">Läuft noch · ${dn}/${all} Sätze</p>
+      <p class="t1">${esc(a.wl)}</p>
+      <p class="go">Weiter ${icon('arrowR')}</p></button>`;
+  })() : '';
+
+  const hero = a ? '' : first ? `<button class="hero sec" data-act="start" data-v="${first}">
+    <p class="lbl">${first === planned ? 'Heute geplant' : 'Heute dran'} · ${W[first].dur} min</p>
+    <p class="t1">${esc(W[first].lb)}</p>
+    <p class="go">Starten ${icon('arrowR')}</p></button>`
+    : `<button class="hero sec" data-act="editWorkout" data-v=""><p class="lbl">Noch kein Workout</p>
+      <p class="t1">Leg dein erstes an</p><p class="go">Los geht’s ${icon('arrowR')}</p></button>`;
+  const others = (a ? order : rest).map(wid => `<button class="wcard sm" data-act="start" data-v="${wid}">
+    <b>${esc(W[wid].lb)}</b></button>`).join('');
+
+  el.innerHTML = `
+    <div class="top"><span style="color:var(--c200)">${mark(32)}</span>
+      <span class="sub" style="color:var(--c200)">${new Date().toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'}).replace('.,', ',')}</span></div>
+    ${phHTML}
+    ${ph && ph.stale || !ph ? '' : `<p class="coach sec">${coach}</p>`}
+    ${resume}
+    ${hero}
+    <div class="grid2" style="margin-top:8px">${others}</div>
+    <button class="btn2 sec" data-act="go" data-v="activity">Andere Aktivität eintragen ${icon('plus')}</button>
+    ${okPh ? `<button class="btn2" style="margin-top:8px" data-act="periodToday">Periode gestartet</button>` : ''}
+    ${backupHint()}`;
+}
+
+// Dezenter Hinweis, wenn eigene Sessions da sind und das Backup fehlt oder älter als 30 Tage ist
+function backupHint(){
+  const own = S.sessions.filter(s => s.src !== 'notion').length;
+  if(own < 3) return '';
+  const lb = S.meta.lastBackup, age = lb ? daysBetween(lb.slice(0, 10), today()) : null;
+  if(lb && age <= 30) return '';
+  return `<button class="btn3 center" style="width:100%;margin-top:8px" data-act="go" data-v="history">${lb ? `Letztes Backup vor ${age} Tagen` : 'Noch kein Backup'} · jetzt sichern</button>`;
+}
+
+// ── WOCHE ────────────────────────────────────────────────────────────────────
+function rWeek(el){
+  const wd = weekDates();
+  const days = S.weekPlan && S.weekPlan.key === wkKey() ? S.weekPlan.days : {};
+  const rows = wd.map((date, i) => {
+    const sel = days[date] || '';
+    const opts = [['', 'Frei'], ...Object.keys(S.workouts).map(w => [w, S.workouts[w].lb])];
+    return `<div class="wday">
+      <p class="lbl" style="margin-bottom:8px">${DAY_AB[i]} · ${fmtDate(date, {day:'2-digit', month:'2-digit'})}${date === today() ? ' · heute' : ''}</p>
+      <div class="chips">${opts.map(([w, lb]) => `<button class="chip${sel === w ? ' on' : ''}" data-act="pickDay" data-d="${date}" data-v="${w}">${esc(lb)}</button>`).join('')}</div>
+    </div>`;
+  }).join('');
+  const wlist = Object.values(S.workouts).map(w => `<button class="row" style="width:100%;text-align:left" data-act="editWorkout" data-v="${w.id}">
+    <div><p class="txt" style="color:var(--c100);font-weight:600">${esc(w.lb)}</p>
+      <p class="sub">${w.ex.length} Übungen · ${w.dur} min</p></div><span class="sub">Bearbeiten</span></button>`).join('');
+  el.innerHTML = `
+    ${topBar()}
+    <h1 class="t1">Woche</h1>
+    <p class="sub" style="margin-top:4px">Neue Woche, neuer Plan. „Heute“ schlägt dir den geplanten Tag als Erstes vor.</p>
+    <div class="card sec">${rows}</div>
+    <div class="sec"><p class="lbl">Deine Workouts</p>${wlist}</div>
+    <button class="btn2" style="margin-top:8px" data-act="editWorkout" data-v="">Neues Workout ${icon('plus')}</button>
+    <button class="btn sec" data-act="go" data-v="home">Fertig ${icon('arrowR')}</button>`;
+}
+
+// ── ZYKLUS ───────────────────────────────────────────────────────────────────
+function rCycle(el){
+  const ph = getPhase(), st = cycleStats();
+  const list = [...st.periods].reverse().slice(0, 12).map(p =>
+    `<div class="row"><span class="txt">${fmtDate(p, {weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'})}</span>
+      <button class="xbtn" data-act="delPeriod" data-v="${p}" aria-label="Eintrag löschen">${icon('x', 20)}</button></div>`).join('');
+  const ok = ph && !ph.stale;
+  el.innerHTML = `
+    ${topBar()}
+    <h1 class="t1">Zyklus</h1>
+    ${flash ? `<div class="hero sec" style="cursor:default"><p class="lbl">Health-Sync</p><p class="txt" style="color:var(--b900);margin-top:6px">${esc(flash)}</p></div>` : ''}
+    ${ok ? `<div class="phase sec">${ringSVG(ph, 128)}<div>
+      <p class="lbl">${ph.lb} · ${ph.tag}</p>
+      <p class="disp big" style="margin-top:6px">${pad(ph.cd)}</p>
+      <p class="sub">${ph.overdue ? 'Periode überfällig? Kurz in Health checken.' : `Tag ${ph.cd} von ~${ph.len} · nächste Periode in ~${ph.left} Tagen`}</p>
+    </div></div>
+    <div class="chips sec">${PH_KEYS.map(k => `<span class="chip" style="${k === ph.key ? `background:${PH[k].fill};border-color:${PH[k].line};color:${PH[k].text}` : ''}">${PH[k].lb.replace('phase', '')} ${ph.ranges[k][0]}–${ph.ranges[k][1]}</span>`).join('')}</div>` : ''}
+    <div class="sec">
+      <p class="lbl">Periode gestartet am</p>
+      <input type="date" id="pdi" value="${today()}" max="${today()}">
+      <button class="btn" style="margin-top:8px" data-act="addPeriodInput">Eintragen ${icon('arrowR')}</button>
+      ${st.periods.length < 3 ? `<p class="tiny" style="margin-top:8px">Trag die letzten 3–4 Starts aus Health → Cycle Tracking ein, dann rechne ich mit deiner echten Zykluslänge.</p>` : ''}
+    </div>
+    <div class="card sec">
+      <p class="lbl" style="margin-bottom:8px">Dein Zyklus</p>
+      <p class="txt">${st.n ? `Ø ${st.len} Tage aus ${st.n} ${st.n === 1 ? 'Zyklus' : 'Zyklen'}` : `Ø ${st.len} Tage, Standardwert`}</p>
+      <p class="sub">${st.n ? `Periode ~${st.periodLen} Tage${st.nLens ? ' (aus Health)' : ''}.` : 'Ab zwei Periodenstarts rechne ich mit deinen echten Daten.'}</p>
+    </div>
+    ${list ? `<div class="sec"><p class="lbl">Einträge</p>${list}</div>` : ''}
+    <details class="sec"><summary class="tiny" style="min-height:44px;display:flex;align-items:center">Aus Apple Health einfügen (optional, braucht den Kurzbefehl „Circa Sync“)</summary>
+      <textarea id="synctxt" rows="4" placeholder="Text aus dem Kurzbefehl hier einsetzen"></textarea>
+      <button class="btn2" style="margin-top:8px" data-act="syncText">Übernehmen</button>
+    </details>
+    <p class="tiny sec" style="text-align:center">Die Prognose ist eine Trainingshilfe, keine Verhütung und keine Diagnose.</p>`;
+}
+
+// ── HISTORIE (einfache Liste, Charts und Insights folgen in Phase 2) ────────
+function sessionVolume(s){
+  return s.ex.filter(x => x.kind === 'w').flatMap(x => x.sets.filter(st => st.done))
+    .reduce((n, st) => n + (st.reps || 0) * (st.kg || 0), 0);
+}
+function sessionInfo(s){
+  if(s.type === 'activity') return [s.note, s.min ? `${s.min} min` : null, s.kcal ? `${s.kcal} kcal` : null, 'Aktivität'].filter(Boolean).join(' · ');
+  return `${s.ex.reduce((k, x) => k + x.sets.filter(st => st.done).length, 0)} Sätze · ${Math.round(sessionVolume(s)).toLocaleString('de-DE')} kg`;
+}
+const energyLb = k => ENERGY.find(([x]) => x === k)?.[1];
+
+function rHistory(el){
+  const rows = [...S.sessions].reverse().map(s => {
+    const e = energyLb(s.energy);
+    return `<button class="row" style="width:100%;text-align:left" data-act="viewSession" data-v="${s.id}"><div>
+      <p class="lbl">${fmtDate(s.date, {weekday:'short', day:'2-digit', month:'2-digit'})}${s.phase ? ' · ' + PH[s.phase].lb : ''}</p>
+      <p class="txt" style="color:var(--c100);font-weight:600">${esc(s.wl)}</p>
+      <p class="sub">${sessionInfo(s)}${e ? ' · ' + e : ''}</p>
+    </div><span style="color:var(--c400)">${icon('chevron', 20).replace('<svg', '<svg style="transform:rotate(-90deg)"')}</span></button>`;
+  }).join('');
+  const lb = S.meta.lastBackup;
+  const age = lb ? Math.floor(daysBetween(lb.slice(0, 10), today())) : null;
+  el.innerHTML = `
+    ${topBar()}
+    <h1 class="t1">Historie</h1>
+    ${rows ? `<div class="sec">${rows}</div>` : `<p class="txt sec">Noch nichts geloggt. Das ändert sich heute.</p>`}
+    <div class="card sec">
+      <p class="lbl" style="margin-bottom:8px">Backup</p>
+      <p class="sub">${lb ? `Letztes Backup: ${age === 0 ? 'heute' : `vor ${age} Tag${age === 1 ? '' : 'en'}`}.` : 'Noch kein Backup.'}
+        Die Datei enthält alles: Sessions, Workouts, Zyklus. Am besten in iCloud Drive ablegen.</p>
+      <button class="btn" style="margin-top:12px" data-act="exportBackup">Backup sichern ${icon('arrowR')}</button>
+      <button class="btn2" style="margin-top:8px" data-act="importBackup">Backup einspielen</button>
+      <input type="file" id="impf" accept=".json,application/json" hidden>
+    </div>`;
+}
+
+// ── SESSION-DETAIL ───────────────────────────────────────────────────────────
+function rSession(el){
+  const s = S.sessions.find(x => x.id === S.ui.view);
+  if(!s){ S.ui.tab = 'history'; rHistory(el); return; }
+  const e = energyLb(s.energy);
+  let body;
+  if(s.type === 'activity') body = `<p class="txt sec">${sessionInfo(s)}</p>`;
+  else body = s.ex.map(x => { const done = x.sets.filter(st => st.done); if(!done.length) return ''; return `<div class="row"><div style="flex:1">
+      <p class="txt" style="color:var(--c100);font-weight:600">${esc(x.name)}</p>
+      <p class="sub">${done.map((st, i) => `${i + 1}: ${fmtNum(st.reps) || '–'}${hasKg(x) && st.kg != null ? ' × ' + fmtNum(st.kg) + ' kg' : ''}`).join(' · ')}</p>
+    </div></div>`; }).join('') || '<p class="sub sec">Keine Sätze abgehakt.</p>';
+  el.innerHTML = `
+    <div class="top"><button class="btn3" data-act="go" data-v="history">${icon('arrowL')} Historie</button>
+      <span class="lbl">${fmtDate(s.date, {weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'})}</span></div>
+    <h1 class="t1">${esc(s.wl)}</h1>
+    <p class="sub" style="margin-top:4px">${[s.phase ? `${PH[s.phase].lb} · Tag ${s.cycleDay}` : null, e ? 'Energie: ' + e : null, s.src === 'notion' ? 'aus Notion übernommen' : null].filter(Boolean).join(' · ') || '&nbsp;'}</p>
+    <div class="sec">${body}</div>
+    <button class="btn3 center sec" style="width:100%" data-act="delSession" data-v="${s.id}">Eintrag löschen</button>`;
+}
+
+// ── WORKOUT-EDITOR ───────────────────────────────────────────────────────────
+// Der Entwurf liegt in S.ui.edit und wird mitgespeichert, damit nichts verloren geht.
+function openEditor(wid){
+  const w = wid && S.workouts[wid];
+  S.ui.edit = w ? {wid, lb: w.lb, dur: w.dur, wu: w.wu || '', ex: clone(w.ex), q: '', k: 'w'}
+               : {wid: null, lb: '', dur: '', wu: '', ex: [], q: '', k: 'w'};
+  go('wkedit');
+}
+
+function edRow(i){
+  const e = S.ui.edit.ex[i], def = S.exercises[e.id];
+  return `<div class="card" style="padding:12px 16px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="flex:1;min-width:0"><p class="txt" style="color:var(--c100);font-weight:600">${esc(def?.n || '?')}</p>
+        <p class="tiny">${KIND_LB[def?.k] || ''}${e.sec ? ' · ' + esc(e.sec) : ''}</p></div>
+      <button class="xbtn" data-act="edMove" data-i="${i}" data-v="-1" aria-label="nach oben"${i === 0 ? ' disabled style="opacity:.3"' : ''}>${icon('chevron', 20).replace('<svg', '<svg style="transform:rotate(180deg)"')}</button>
+      <button class="xbtn" data-act="edMove" data-i="${i}" data-v="1" aria-label="nach unten"${i === S.ui.edit.ex.length - 1 ? ' disabled style="opacity:.3"' : ''}>${icon('chevron', 20)}</button>
+      <button class="xbtn" data-act="edDel" data-i="${i}" aria-label="entfernen">${icon('x', 20)}</button>
+    </div>
+    <div class="grid2" style="margin-top:8px">
+      <div><p class="tiny" style="margin-bottom:4px">Sätze</p><input type="text" inputmode="numeric" data-exf="sets" data-i="${i}" value="${e.sets}"></div>
+      <div><p class="tiny" style="margin-bottom:4px">Ziel (z. B. 10, 8–12, 30s)</p><input type="text" data-exf="target" data-i="${i}" value="${esc(e.target)}"></div>
+    </div></div>`;
+}
+
+// Suchergebnisse beim Hinzufügen: beste Treffer, Tippfehler-Hinweis, „neu anlegen“
+function exResults(){
+  const ed = S.ui.edit, q = ed.q.trim();
+  if(!q) return `<p class="tiny">Tipp einen Namen. Ich finde auch „Hip Trust“ oder „latzug“.</p>`;
+  const hits = Object.entries(S.exercises).map(([id, d]) => ({id, n: d.n, s: matchScore(q, d.n)}))
+    .filter(h => h.s !== null).sort((a, b) => a.s - b.s || a.n.localeCompare(b.n)).slice(0, 6);
+  const exact = hits.find(h => h.s === 0);
+  const sim = !exact && hits.find(h => h.s >= 3);   // nur Tippfehler-Treffer, keine reinen Präfixe
+  let html = sim ? `<p class="sub" style="margin-bottom:8px">Meintest du „${esc(sim.n)}“?</p>` : '';
+  html += hits.map(h => `<button class="row" style="width:100%;text-align:left" data-act="edAdd" data-v="${h.id}">
+    <span class="txt" style="color:var(--c100)">${esc(h.n)}</span><span style="color:var(--c200)">${icon('plus', 20)}</span></button>`).join('');
+  if(!exact) html += `<div class="card" style="margin-top:8px">
+    <p class="lbl" style="margin-bottom:8px">Neu anlegen: „${esc(q)}“</p>
+    <div class="chips">${Object.entries(KIND_LB).map(([k, lb]) => `<button class="chip${ed.k === k ? ' on' : ''}" data-act="edKind" data-v="${k}">${lb}</button>`).join('')}</div>
+    <button class="btn2" style="margin-top:8px" data-act="edNew">Als neue Übung anlegen ${icon('plus')}</button></div>`;
+  return html;
+}
+
+function rEditor(el){
+  const ed = S.ui.edit; if(!ed){ S.ui.tab = 'week'; rWeek(el); return; }
+  el.innerHTML = `
+    <div class="top"><button class="btn3" data-act="edCancel">${icon('arrowL')} Abbrechen</button>
+      <span class="lbl">${ed.wid ? 'Workout bearbeiten' : 'Neues Workout'}</span></div>
+    <p class="lbl" style="margin-bottom:8px">Name</p>
+    <input type="text" data-ed="lb" value="${esc(ed.lb)}" placeholder="z. B. Legs & Core" autocomplete="off">
+    <div class="grid2" style="margin-top:8px">
+      <div><p class="tiny" style="margin-bottom:4px">Dauer (min)</p><input type="text" inputmode="numeric" data-ed="dur" value="${ed.dur}" placeholder="60"></div>
+      <div><p class="tiny" style="margin-bottom:4px">Warm-up (optional)</p><input type="text" data-ed="wu" value="${esc(ed.wu)}" placeholder="Laufen 20 min"></div>
+    </div>
+    <div class="sec"><p class="lbl">Übungen</p>
+      <div class="stack" id="edlist">${ed.ex.map((_, i) => edRow(i)).join('') || '<p class="sub">Noch keine. Füg unten welche hinzu.</p>'}</div></div>
+    <div class="sec"><p class="lbl">Übung hinzufügen</p>
+      <input type="text" id="exq" value="${esc(ed.q)}" placeholder="Übung suchen oder neu anlegen" autocomplete="off" autocapitalize="words">
+      <div id="exres" style="margin-top:8px">${exResults()}</div></div>
+    <button class="btn sec" data-act="edSave">Speichern ${icon('arrowR')}</button>
+    ${ed.wid ? `<button class="btn3 center" style="width:100%;margin-top:8px" data-act="edDelete">Workout löschen</button>` : ''}`;
+}
+
+// ── AKTIVITÄT EINTRAGEN ──────────────────────────────────────────────────────
+function rActivity(el){
+  const f = S.ui.act || (S.ui.act = {type: '', min: '', kcal: '', date: today(), energy: null, q: ''});
+  el.innerHTML = `
+    <div class="top"><button class="btn3" data-act="actCancel">${icon('arrowL')} Zurück</button><span class="lbl">Aktivität</span></div>
+    <h1 class="t1">Was hast du gemacht?</h1>
+    <div class="chips sec">${S.activityTypes.map(t => `<button class="chip${f.type === t ? ' on' : ''}" data-act="actPick" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+    <input type="text" id="actq" style="margin-top:8px" value="${esc(f.q)}" placeholder="Andere Aktivität …" autocomplete="off" autocapitalize="words">
+    <div id="actres" style="margin-top:8px">${actResults()}</div>
+    <div class="grid2 sec">
+      <div><p class="lbl" style="margin-bottom:8px">Dauer (min)</p><input type="text" inputmode="numeric" data-af="min" value="${f.min}" placeholder="45"></div>
+      <div><p class="lbl" style="margin-bottom:8px">kcal (optional)</p><input type="text" inputmode="numeric" data-af="kcal" value="${f.kcal}" placeholder="–"></div>
+    </div>
+    <div class="sec"><p class="lbl" style="margin-bottom:8px">Wann?</p><input type="date" data-af="date" value="${f.date}" max="${today()}"></div>
+    <div class="sec"><p class="lbl">Wie war deine Energie?</p>
+      <div class="egrid">${ENERGY.map(([k, lb]) => `<button class="ebtn${f.energy === k ? ' on' : ''}" data-act="actEnergy" data-v="${k}">${lb}</button>`).join('')}</div></div>
+    <button class="btn sec" data-act="actSave">Eintragen ${icon('arrowR')}</button>`;
+}
+
+function actResults(){
+  const q = (S.ui.act?.q || '').trim();
+  if(!q) return '';
+  const exact = S.activityTypes.find(t => normName(t) === normName(q));
+  if(exact) return `<button class="btn2" data-act="actPick" data-v="${esc(exact)}">„${esc(exact)}“ auswählen</button>`;
+  const sim = findSimilar(q, S.activityTypes);
+  return `${sim ? `<button class="btn2" data-act="actPick" data-v="${esc(sim.name)}">Meintest du „${esc(sim.name)}“?</button>` : ''}
+    <button class="btn3" data-act="actNew">${icon('plus', 18)} „${esc(q)}“ als neue Aktivität</button>`;
+}
+
+// ── WORKOUT ──────────────────────────────────────────────────────────────────
+function setRow(e, i){
+  const x = S.active.ex[e], s = x.sets[i];
+  const inp = (f, mode) => `<input class="num" type="text" inputmode="${mode}" autocomplete="off" enterkeyhint="done"
+    data-e="${e}" data-i="${i}" data-f="${f}" value="${fmtNum(s[f])}" placeholder="–"
+    aria-label="Satz ${i + 1} ${f === 'kg' ? 'Gewicht' : unitLabel(x.unit)}">`;
+  return `<div class="set${hasKg(x) ? '' : ' one'}" id="set_${e}_${i}">
+    <span class="sn">${i + 1}</span>
+    ${inp('reps', 'numeric')}
+    ${hasKg(x) ? `<span class="kgcell">${inp('kg', 'decimal')}<span class="pr">PR</span></span>` : ''}
+    <button class="ck" data-act="ck" data-e="${e}" data-i="${i}" aria-label="Satz ${i + 1} erledigt">${icon('check', 26)}</button>
+  </div>`;
+}
+
+// Zustände der Satz-Zeilen: offen, aktiv (erster offener Satz), erledigt, PR
+function paintSets(e){
+  const x = S.active.ex[e];
+  const best = hasKg(x) ? bestKg(x.id, x.kind) : null;
+  const firstOpen = x.sets.findIndex(s => !s.done);
+  x.sets.forEach((s, i) => {
+    const row = $(`set_${e}_${i}`); if(!row) return;
+    row.classList.toggle('done', s.done);
+    row.classList.toggle('active', i === firstOpen);
+    row.classList.toggle('is-pr', best != null && s.kg != null && (x.kind === 'a' ? s.kg < best : s.kg > best));
+  });
+}
+
+function exBody(e){
+  const x = S.active.ex[e];
+  const last = lastDoneSets(x.id);
+  const one = !hasKg(x);
+  return `${last ? `<p class="sub" style="margin-bottom:4px">Zuletzt ${fmtDate(last.date, {day:'2-digit', month:'2-digit'})}: ${setsStr(x, last.sets)}</p>` : ''}
+    <p class="tiny">Ziel: ${x.sets.length}× ${esc(x.target)}</p>
+    <div class="sets-hd${one ? ' one' : ''}"><span class="lbl" style="padding-left:12px">Satz</span><span class="lbl">${unitLabel(x.unit)}</span>${one ? '' : `<span class="lbl">${x.kind === 'a' ? 'kg Hilfe' : 'kg'}</span>`}<span></span></div>
+    ${x.sets.map((_, i) => setRow(e, i)).join('')}
+    <div class="set-btns">
+      <button class="btn3" data-act="delSet" data-e="${e}">${icon('minus', 18)} Satz weg</button>
+      <button class="btn3" data-act="addSet" data-e="${e}">${icon('plus', 18)} Satz dazu</button>
+    </div>
+    ${x.alts?.length ? `<p class="lbl" style="margin:12px 0 8px">Alternativen</p><div class="chips">${x.alts.map(a => `<span class="chip">${esc(a)}</span>`).join('')}</div>` : ''}`;
+}
+
+const progText = x => `${x.sets.filter(s => s.done).length}/${x.sets.length}`;
+
+function rWorkout(el){
+  const a = S.active; if(!a){ S.ui.tab = 'home'; rHome(el); return; }
+  const wu = a.wu ?? S.workouts[a.wid]?.wu;
+  const blocks = a.blocks.map(blk => `<div class="sec">
+    <p class="lbl">${esc(blk.lb)}</p>
+    <div class="stack">${blk.ex.map(e => { const x = a.ex[e], open = a.open.includes(e), full = x.sets.every(s => s.done); return `<div class="ex" id="ex_${e}">
+      <button class="ex-hd" data-act="tog" data-e="${e}">
+        <div style="flex:1;min-width:0"><p class="nm">${esc(x.name)}</p>
+          <p class="sub" id="sum_${e}">${exSummary(x)}</p></div>
+        <span class="prog${full ? ' full' : ''}" id="pg_${e}">${progText(x)}</span>
+        <span class="chev${open ? ' o' : ''}" id="ch_${e}">${icon('chevron')}</span>
+      </button>
+      <div class="ex-bd" id="eb_${e}"${open ? '' : ' hidden'}>${exBody(e)}</div></div>`; }).join('')}</div>
+  </div>`).join('');
+
+  const phLb = a.phase ? `${PH[a.phase].lb.replace('phase', '')} · Tag ${a.cycleDay}` : 'Heute';
+  el.innerHTML = `
+    <div class="top">
+      <button class="btn3" data-act="go" data-v="home" aria-label="Pause, zurück zu Heute">${icon('arrowL')} Pause</button>
+      <span class="lbl" style="text-align:right">${a.date === today() ? '' : fmtDate(a.date, {day:'2-digit', month:'2-digit'}) + ' · '}${phLb}</span>
+    </div>
+    <h1 class="t1">${esc(a.wl)}</h1>
+    ${wu ? `<div class="card sec"><p class="lbl" style="margin-bottom:4px">Warm-up</p><p class="txt">${esc(wu)}</p></div>` : ''}
+    ${blocks}
+    <div class="sec">
+      <p class="lbl">Wie war deine Energie?</p>
+      <div class="egrid">${ENERGY.map(([k, lb]) => `<button class="ebtn${a.energy === k ? ' on' : ''}" data-act="energy" data-v="${k}">${lb}</button>`).join('')}</div>
+    </div>
+    <button class="btn sec" data-act="finish">Workout abschließen ${icon('arrowR')}</button>
+    <button class="btn3 center" style="width:100%;margin-top:8px" data-act="discard">Workout verwerfen</button>`;
+  a.ex.forEach((_, e) => paintSets(e));
+}
+
+function setOpen(e, open){
+  const a = S.active;
+  a.open = open ? [...new Set([...a.open, e])] : a.open.filter(x => x !== e);
+  const bd = $('eb_' + e), ch = $('ch_' + e);
+  if(bd) bd.hidden = !open;
+  if(ch) ch.classList.toggle('o', open);
+}
+
+function refreshEx(e){
+  const x = S.active.ex[e];
+  const sum = $('sum_' + e); if(sum) sum.textContent = exSummary(x);
+  const pg = $('pg_' + e); if(pg){ pg.textContent = progText(x); pg.classList.toggle('full', x.sets.every(s => s.done)); }
+  paintSets(e);
+}
+
+// ── FERTIG ───────────────────────────────────────────────────────────────────
+function rDone(el){
+  const s = S.sessions.find(x => x.id === S.ui.lastSessionId) || S.sessions[S.sessions.length - 1];
+  if(!s){ S.ui.tab = 'home'; rHome(el); return; }
+  const sets = s.ex.reduce((n, x) => n + x.sets.filter(st => st.done).length, 0);
+  const min = Math.round((new Date(s.finishedAt) - new Date(s.startedAt)) / 60000);
+  const wd = weekDates(), week = S.sessions.filter(x => wd.includes(x.date)).length;
+  const stat = (v, l) => `<div class="card"><p class="disp big">${v}</p><p class="lbl" style="margin-top:6px">${l}</p></div>`;
+  el.innerHTML = `
+    ${topBar(`<span class="lbl">${fmtDate(s.date, {day:'numeric', month:'short'})}</span>`)}
+    <p class="lbl">${esc(s.wl)}</p>
+    <h1 class="disp" style="font-size:56px;color:var(--c100);margin-top:8px">Erledigt.</h1>
+    <div class="grid2 sec">
+      ${stat(sets, 'Sätze')}
+      ${stat(Math.round(sessionVolume(s)).toLocaleString('de-DE'), 'kg bewegt')}
+      ${stat(min > 0 && min < 600 ? min : '–', 'Minuten')}
+      ${stat(week, 'Diese Woche')}
+    </div>
+    <div class="sec">${s.ex.filter(x => x.sets.some(st => st.done)).map(x =>
+      `<div class="row"><span class="txt" style="color:var(--c100)">${esc(x.name)}</span><span class="sub" style="text-align:right">${setsStr(x, x.sets.filter(st => st.done))}</span></div>`).join('')
+      || '<p class="sub">Keine Sätze abgehakt.</p>'}</div>
+    <p class="tiny sec" style="text-align:center">Was du nächstes Mal draufpackst, sagt dir bald der Coach.</p>
+    <button class="btn sec" data-act="go" data-v="home">Zurück zu Heute ${icon('arrowR')}</button>`;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// AKTIONEN (Event-Delegation)
+// ════════════════════════════════════════════════════════════════════════════
+const ACT = {
+  go: d => go(d.v),
+  resume: () => go('workout'),
+  start: d => {
+    if(S.active){
+      if(S.active.wid === d.v){ go('workout'); return; }
+      if(!confirm(`${S.active.wl} läuft noch. Verwerfen und ${S.workouts[d.v].lb} starten?`)) return;
+    }
+    S.active = newSession(d.v); saveNow(); go('workout');
+  },
+  tog: d => { const e = +d.e; setOpen(e, !S.active.open.includes(e)); saveSoon(); },
+  ck: d => {
+    const e = +d.e, i = +d.i, a = S.active, x = a.ex[e], s = x.sets[i];
+    s.done = !s.done;
+    refreshEx(e);
+    // Letzter Satz abgehakt → Übung zuklappen, nächste offene aufklappen und hinscrollen
+    if(s.done && x.sets.every(t => t.done)){
+      const next = a.ex.findIndex((y, j) => j > e && !y.sets.every(t => t.done));
+      if(next >= 0){
+        setOpen(e, false); setOpen(next, true);
+        setTimeout(() => $('ex_' + next)?.scrollIntoView({behavior: 'smooth', block: 'start'}), 150);
+      }
+    }
+    saveSoon();
+  },
+  addSet: d => {
+    const e = +d.e, x = S.active.ex[e], l = x.sets[x.sets.length - 1];
+    x.sets.push(mkSet(l?.reps, l?.kg));
+    $('eb_' + e).innerHTML = exBody(e); refreshEx(e); saveSoon();
+  },
+  delSet: d => {
+    const e = +d.e, x = S.active.ex[e];
+    if(x.sets.length <= 1) return;
+    if(x.sets[x.sets.length - 1].done && !confirm('Letzter Satz ist schon abgehakt. Trotzdem löschen?')) return;
+    x.sets.pop(); $('eb_' + e).innerHTML = exBody(e); refreshEx(e); saveSoon();
+  },
+  energy: (d, btn) => {
+    S.active.energy = d.v;
+    document.querySelectorAll('.ebtn').forEach(b => b.classList.toggle('on', b === btn)); saveSoon();
+  },
+  finish: () => {
+    const a = S.active;
+    const n = a.ex.reduce((k, x) => k + x.sets.filter(s => s.done).length, 0);
+    if(!n && !confirm('Noch kein Satz abgehakt. Trotzdem abschließen?')) return;
+    const session = {
+      id: 's' + Date.now(), date: a.date, wid: a.wid, wl: a.wl, phase: a.phase, cycleDay: a.cycleDay,
+      energy: a.energy, startedAt: a.startedAt, finishedAt: new Date().toISOString(),
+      ex: a.ex.map(x => ({id: x.id, name: x.name, kind: x.kind, unit: x.unit, target: x.target,
+        sets: x.sets.map(s => ({reps: s.reps, kg: s.kg, done: s.done}))}))
+    };
+    addSession(session); S.active = null; S.ui.lastSessionId = session.id; S.ui.tab = 'done';
+    saveNow(); render();
+  },
+  discard: () => {
+    if(!confirm('Workout verwerfen? Die eingetragenen Sätze sind dann weg.')) return;
+    S.active = null; saveNow(); go('home');
+  },
+  pickDay: d => {
+    if(!S.weekPlan || S.weekPlan.key !== wkKey()) S.weekPlan = {key: wkKey(), days: {}};
+    if(d.v) S.weekPlan.days[d.d] = d.v; else delete S.weekPlan.days[d.d];
+    saveNow(); render();
+  },
+  addPeriodInput: () => {
+    const v = $('pdi')?.value;
+    if(!v) return;
+    if(v > today()){ alert('Das Datum liegt in der Zukunft.'); return; }
+    if(!addPeriod(v)) alert('Dieses Datum ist schon eingetragen.');
+    render();
+  },
+  periodToday: () => {
+    if(!confirm('Periode heute gestartet? Dann beginnt dein Zyklus wieder bei Tag 1.')) return;
+    if(!addPeriod(today())) alert('Heute ist schon eingetragen.');
+    render();
+  },
+  delPeriod: d => {
+    if(!confirm(`Eintrag vom ${fmtDate(d.v)} löschen?`)) return;
+    S.cycle.periods = S.cycle.periods.filter(p => p !== d.v); delete S.cycle.lens?.[d.v]; saveNow(); render();
+  },
+
+  // ── Historie ──
+  viewSession: d => { S.ui.view = d.v; go('session'); },
+  delSession: d => {
+    const s = S.sessions.find(x => x.id === d.v); if(!s) return;
+    if(!confirm(`${s.wl} vom ${fmtDate(s.date)} löschen? Das lässt sich nicht rückgängig machen.`)) return;
+    S.sessions = S.sessions.filter(x => x.id !== d.v); S.ui.view = null; saveNow(); go('history');
+  },
+
+  // ── Backup ──
+  exportBackup: async () => {
+    S.meta.lastBackup = new Date().toISOString(); saveNow();
+    const name = `circa-backup-${today()}.json`, json = JSON.stringify(S, null, 1);
+    const file = new File([json], name, {type: 'application/json'});
+    if(navigator.canShare?.({files: [file]})){
+      try { await navigator.share({files: [file], title: 'Circa Backup'}); render(); return; }
+      catch(e){ if(e.name === 'AbortError'){ render(); return; } }   // abgebrochen → kein Download-Fallback
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([json], {type: 'application/json'})); a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    render();
+  },
+  importBackup: () => $('impf')?.click(),
+
+  // ── Apple Health ──
+  syncText: () => handleSyncText($('synctxt')?.value || ''),
+
+  // ── Workout-Editor ──
+  editWorkout: d => openEditor(d.v),
+  edCancel: () => {
+    const ed = S.ui.edit, orig = ed.wid && S.workouts[ed.wid];
+    const changed = orig ? JSON.stringify([ed.lb, String(ed.dur), ed.wu, ed.ex]) !== JSON.stringify([orig.lb, String(orig.dur), orig.wu || '', orig.ex])
+                         : ed.lb || ed.ex.length;
+    if(changed && !confirm('Änderungen verwerfen?')) return;
+    S.ui.edit = null; go('week');
+  },
+  edAdd: d => {
+    const ed = S.ui.edit, prev = ed.ex[ed.ex.length - 1];
+    const def = S.exercises[d.v];
+    ed.ex.push({id: d.v, sets: 3, target: def.k === 't' ? '30s' : '10', alts: [], sec: prev?.sec || 'Übungen'});
+    ed.q = ''; saveNow(); render();
+  },
+  edKind: d => { S.ui.edit.k = d.v; $('exres').innerHTML = exResults(); saveSoon(); },
+  edNew: () => {
+    const ed = S.ui.edit, name = ed.q.trim().replace(/\s+/g, ' ');
+    if(!name) return;
+    const names = Object.values(S.exercises).map(x => x.n);
+    const exact = Object.entries(S.exercises).find(([, x]) => normName(x.n) === normName(name));
+    if(exact){ ACT.edAdd({v: exact[0]}); return; }
+    const sim = findSimilar(name, names);
+    if(sim && !confirm(`„${name}“ sieht aus wie „${sim.name}“. Wirklich als neue Übung anlegen?\n\nAbbrechen und oben „${sim.name}“ antippen, falls es ein Tippfehler war.`)) return;
+    let id = 'u_' + normName(name).slice(0, 24);
+    while(S.exercises[id]) id += '_';
+    S.exercises[id] = {n: name, k: ed.k || 'w', custom: true};
+    ACT.edAdd({v: id});
+  },
+  edMove: d => {
+    const ex = S.ui.edit.ex, i = +d.i, j = i + +d.v;
+    if(j < 0 || j >= ex.length) return;
+    [ex[i], ex[j]] = [ex[j], ex[i]]; saveNow(); render();
+  },
+  edDel: d => { S.ui.edit.ex.splice(+d.i, 1); saveNow(); render(); },
+  edSave: () => {
+    const ed = S.ui.edit, lb = ed.lb.trim();
+    if(!lb){ alert('Gib dem Workout einen Namen.'); return; }
+    if(!ed.ex.length){ alert('Ein Workout ohne Übung ist eine Pause. Füg mindestens eine hinzu.'); return; }
+    const twin = Object.values(S.workouts).find(w => w.id !== ed.wid && normName(w.lb) === normName(lb));
+    if(twin && !confirm(`Es gibt schon „${twin.lb}“. Trotzdem ein zweites Workout mit dem Namen speichern?`)) return;
+    const sets = ed.ex.reduce((n, e) => n + (e.sets || 0), 0);
+    const id = ed.wid || 'w_' + Date.now().toString(36);
+    S.workouts[id] = {id, lb, dur: parseInt(ed.dur, 10) || Math.max(20, Math.round(sets * 2.5 / 5) * 5),
+      wu: ed.wu.trim() || null, ex: ed.ex.map(e => ({...e, sets: Math.max(1, parseInt(e.sets, 10) || 1), target: String(e.target || '10').trim()}))};
+    S.ui.edit = null; saveNow(); go('week');
+  },
+  edDelete: () => {
+    const ed = S.ui.edit, w = S.workouts[ed.wid];
+    if(!confirm(`„${w.lb}“ löschen? Deine bisherigen Sessions bleiben in der Historie.`)) return;
+    delete S.workouts[ed.wid];
+    if(S.weekPlan?.days) for(const k of Object.keys(S.weekPlan.days)) if(S.weekPlan.days[k] === ed.wid) delete S.weekPlan.days[k];
+    S.ui.edit = null; saveNow(); go('week');
+  },
+
+  // ── Aktivität ──
+  actCancel: () => { S.ui.act = null; go('home'); },
+  actPick: d => { S.ui.act.type = d.v; S.ui.act.q = ''; saveSoon(); render(); },
+  actNew: () => {
+    const f = S.ui.act, name = f.q.trim().replace(/\s+/g, ' ');
+    if(!name) return;
+    const sim = findSimilar(name, S.activityTypes);
+    if(sim && !confirm(`„${name}“ sieht aus wie „${sim.name}“. Wirklich neu anlegen?`)) return;
+    S.activityTypes.push(name); f.type = name; f.q = ''; saveNow(); render();
+  },
+  actEnergy: (d, btn) => {
+    S.ui.act.energy = d.v;
+    document.querySelectorAll('.ebtn').forEach(b => b.classList.toggle('on', b === btn)); saveSoon();
+  },
+  actSave: () => {
+    const f = S.ui.act;
+    if(!f.type){ alert('Wähl erst aus, was du gemacht hast.'); return; }
+    const min = parseInt(f.min, 10);
+    if(!min){ alert('Wie lange warst du dabei? Trag die Minuten ein.'); return; }
+    const date = f.date && f.date <= today() ? f.date : today();
+    const ph = getPhase(date);
+    addSession({id: 'a' + Date.now(), type: 'activity', date, wid: null, wl: f.type, act: f.type, min,
+      kcal: parseInt(f.kcal, 10) || null, phase: ph && !ph.stale ? ph.key : null, cycleDay: ph && !ph.stale ? ph.cd : null,
+      energy: f.energy, startedAt: null, finishedAt: new Date().toISOString(), ex: []});
+    S.ui.act = null; saveNow(); go('history');
+  }
+};
+
+document.addEventListener('click', ev => {
+  const btn = ev.target.closest('[data-act]'); if(!btn) return;
+  const fn = ACT[btn.dataset.act]; if(fn) fn(btn.dataset, btn);
+});
+
+// Backup-Datei gewählt → prüfen, Vorschau, dann alles ersetzen
+document.addEventListener('change', async ev => {
+  if(ev.target.id !== 'impf') return;
+  const f = ev.target.files?.[0]; ev.target.value = ''; if(!f) return;
+  let data;
+  try { data = migrate(JSON.parse(await f.text())); }
+  catch(e){ alert('Das ist keine Circa-Backup-Datei, oder sie ist beschädigt.'); return; }
+  const n = data.sessions.length, p = data.cycle.periods.length, last = data.sessions[n - 1];
+  const stand = last ? fmtDate(last.date) : '–';
+  if(!confirm(`Backup: ${n} Einträge, ${p} Periodenstarts, letzter Eintrag ${stand}.\n\nDeine aktuellen Daten (${S.sessions.length} Einträge) werden komplett ersetzt. Weiter?`)) return;
+  data.active = null; data.ui = {tab: 'history', lastSessionId: null};
+  S = data; saveNow(); render();
+});
+
+// Zahlenfeld antippen → Wert ist markiert, neue Zahl überschreibt direkt
+document.addEventListener('focusin', ev => {
+  const t = ev.target;
+  if(t.matches('.num, [data-exf], [data-af="min"], [data-af="kcal"], [data-ed="dur"]')) setTimeout(() => t.select(), 0);
+});
+
+// Eingaben im Workout-Editor und bei Aktivitäten: direkt in den Entwurf, Suchergebnisse live
+document.addEventListener('input', ev => {
+  const t = ev.target, ed = S.ui.edit, f = S.ui.act;
+  if(ed && t.dataset.ed){ ed[t.dataset.ed] = t.value; saveSoon(); }
+  else if(ed && t.dataset.exf){ ed.ex[+t.dataset.i][t.dataset.exf] = t.value; saveSoon(); }
+  else if(ed && t.id === 'exq'){ ed.q = t.value; $('exres').innerHTML = exResults(); saveSoon(); }
+  else if(f && t.dataset.af){ f[t.dataset.af] = t.value; saveSoon(); }
+  else if(f && t.id === 'actq'){ f.q = t.value; $('actres').innerHTML = actResults(); saveSoon(); }
+});
+
+// Eingabe in Satzfeldern: Wert speichern und an folgende, unberührte Sätze mit gleichem Wert
+// weitergeben. Gerade Sätze (4× 30 kg) ziehen mit, Pyramiden (60 → 110) bleiben stehen.
+document.addEventListener('input', ev => {
+  const t = ev.target; if(!t.dataset.f || !S.active) return;
+  const e = +t.dataset.e, i = +t.dataset.i, f = t.dataset.f, x = S.active.ex[e];
+  const v = parseNum(t.value);
+  const old = x.sets[i][f];   // Wert vor diesem Tastendruck
+  x.sets[i][f] = v; x.sets[i].touched = true;
+  for(let j = i + 1; j < x.sets.length; j++){
+    const s = x.sets[j]; if(s.done || s.touched) continue;
+    if(s[f] !== old && s[f] !== null) break;
+    s[f] = v;
+    const inp = document.querySelector(`input[data-e="${e}"][data-i="${j}"][data-f="${f}"]`);
+    if(inp) inp.value = fmtNum(v);
+  }
+  refreshEx(e); saveSoon();
+});
+// Beim Verlassen des Feldes Anzeige vereinheitlichen ("82.5" → "82,5")
+document.addEventListener('change', ev => {
+  const t = ev.target; if(!t.dataset.f || !S.active) return;
+  t.value = fmtNum(S.active.ex[+t.dataset.e].sets[+t.dataset.i][t.dataset.f]);
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════════════════════
+function init(){
+  load();
+  if(S.active) S.ui.tab = 'workout';               // genau dorthin zurück, wo sie war
+  else if(S.ui.tab === 'workout' || S.ui.tab === 'done') S.ui.tab = 'home';
+  // Editor und Aktivität bleiben offen, wenn ein Entwurf existiert (nichts geht verloren)
+  if(S.ui.tab === 'wkedit' && !S.ui.edit) S.ui.tab = 'week';
+  if(S.ui.tab === 'session' && !S.sessions.some(s => s.id === S.ui.view)) S.ui.tab = 'history';
+  if(!S.active && S.ui.tab === 'home' && new Date().getDay() === 1 && !(S.weekPlan && S.weekPlan.key === wkKey())) S.ui.tab = 'week';
+  saveNow();
+  render();
+  // Browser bitten, den Speicher nicht automatisch zu leeren
+  if(navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service Worker:', err));
+  }
+}
+init();
+</script>
+</body>
+</html>
