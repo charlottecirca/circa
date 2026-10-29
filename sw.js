@@ -1,7 +1,7 @@
 // Service Worker: sorgt dafür, dass die App im Gym-Keller ohne Netz läuft.
 // Strategie: sofort aus dem Cache antworten, im Hintergrund aktualisieren.
 // Updates sind damit beim übernächsten Öffnen da. Bei Änderungen CACHE hochzählen.
-const CACHE = 'circa-v10';
+const CACHE = 'circa-v14';
 const FONT_CACHE = 'circa-fonts-v1';
 const ASSETS = [
   './', './index.html', './manifest.json',

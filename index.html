@@ -31,7 +31,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 button,input,a,summary{touch-action:manipulation}   /* kein Doppeltipp-Zoom, keine 300-ms-Wartezeit */
 #app{height:100%;display:flex;flex-direction:column;overflow:hidden}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:20px max(20px,env(safe-area-inset-right)) 120px max(20px,env(safe-area-inset-left));
+  padding:20px max(20px,env(safe-area-inset-right)) 96px max(20px,env(safe-area-inset-left));
   padding-top:calc(env(safe-area-inset-top,8px) + 12px)}   /* unter Uhrzeit und Notch bleibt Luft */
 .ic{display:block;flex-shrink:0}
 
@@ -85,8 +85,6 @@ input[type=date]{display:block}
 /* Kopf */
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;min-height:44px}
 .top>*{display:flex;align-items:center;line-height:1}
-.brand{display:flex;align-items:center;gap:8px;color:var(--c200)}
-.wm{font-size:20px}
 
 /* Heute */
 .hero{display:block;width:100%;text-align:left;background:var(--c200);color:var(--b900);padding:16px}
@@ -106,6 +104,9 @@ input[type=date]{display:block}
 .strip i.on{background:var(--ph-line)}
 .strip b{position:absolute;top:-3px;width:12px;height:12px;background:var(--c100);transform:translateX(-50%)}
 .coach{font-size:16px;line-height:1.4;color:var(--c100);margin-top:14px}
+.legend{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:11px;color:var(--c400);letter-spacing:.04em}
+.legend b{font-weight:600;color:var(--c300)}
+.legend .on,.legend .on b{color:var(--ph-text)}
 .focus{display:grid;grid-template-columns:64px 1fr;gap:10px 12px;margin-top:16px;padding-top:16px;border-top:2px solid var(--b700)}
 .focus .lbl{font-size:11px;padding-top:2px;color:var(--c400)}
 .focus p{font-size:14px;line-height:1.4;color:var(--c200)}
@@ -115,8 +116,6 @@ input[type=date]{display:block}
 .hero.slim .row{display:flex;align-items:center;justify-content:space-between}
 .hero.slim .why{font-size:14px;line-height:1.4;color:var(--b700);margin-top:8px}
 .links{display:flex;gap:16px;flex-wrap:wrap}
-.phase{display:flex;gap:16px;align-items:center;background:var(--ph-fill);border-left:4px solid var(--ph-line);padding:16px}
-.phase .lbl{color:var(--ph-text)}
 
 /* Workout – Akkordeon */
 .ex{background:var(--b800);scroll-margin-top:12px}
@@ -151,9 +150,14 @@ input[type=date]{display:block}
 .set.done .num{color:var(--c100)}
 .set.done .ck{background:var(--c200);color:var(--b900);border-left-color:var(--c200)}
 .set-btns{display:flex;justify-content:space-between;margin-top:4px}
+/* Coach-Satz unter dem Übungsnamen: Phasenfarbe, bei runter/Plateau rot. Fertig → neutral. */
+.tipline.up,.tipline.hold{color:var(--ph-text)}
+.tipline.down,.tipline.plateau{color:#FF8A96}
+/* Zusammenfassung nach dem Workout */
+.tip{font-size:14px;line-height:1.4;color:var(--ph-text);padding:4px 0 4px 12px;border-left:2px solid var(--ph-line)}
 
-.egrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ebtn{min-height:56px;background:var(--b800);border:2px solid var(--b800);font-size:17px;font-weight:600;color:var(--c200)}
+.egrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ebtn{min-height:48px;background:var(--b800);border:2px solid var(--b800);font-size:14px;font-weight:600;color:var(--c200);padding:0 4px}
 .ebtn.on{background:var(--c200);border-color:var(--c200);color:var(--b900)}
 
 /* Listen */
@@ -163,15 +167,23 @@ input[type=date]{display:block}
 .big{font-size:44px;color:var(--c100)}
 
 /* Woche */
-.wday{padding:12px 0;border-bottom:2px solid var(--b700)}
+.wday{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:2px solid var(--b700)}
 .wday:last-child{border-bottom:none}
+.wday .dn{width:40px;flex-shrink:0;font-family:var(--display);font-stretch:125%;font-weight:800;font-size:13px;color:var(--c300);line-height:1.2}
+.wday .dn small{font-family:var(--ui);font-stretch:100%;font-weight:400;font-size:11px;color:var(--c400)}
+.wday.today .dn{color:var(--c100)}
+.wday .chips{gap:4px}
+.wday .chip{min-height:36px;padding:0 8px;font-size:11px}
 
 /* Tab-Bar · 49 pt + Safe Area */
-nav{position:fixed;bottom:0;left:0;right:0;background:var(--b950);display:flex;
-  padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);z-index:100}
-.ntb{flex:1;height:49px;display:flex;align-items:center;justify-content:center;padding:0 2px;
-  font-size:13px;font-weight:600;color:var(--c400)}
-.ntb.on{color:var(--c100);font-weight:700}
+/* Tab-Bar: Icons statt Text, 60 pt hoch. Rutscht zur Hälfte in die Home-Indicator-Zone, damit
+   unter den Icons kein leerer Streifen bleibt (Charlottes Wunsch, 29.10.). */
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--b950);display:flex;z-index:100;
+  padding:0 env(safe-area-inset-right) calc(env(safe-area-inset-bottom,0px) * .5) env(safe-area-inset-left)}
+.ntb{flex:1;height:60px;display:flex;align-items:center;justify-content:center;color:var(--c400);
+  transition:color 120ms var(--ease)}
+.ntb.on{color:var(--c100)}
+.ntb .ic{width:28px;height:28px}
 </style>
 </head>
 <body>
@@ -483,6 +495,12 @@ const IC = {
   arrowR:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
   arrowL:'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
   x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  // Tab-Bar
+  home:'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+  calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4"/><path d="M3 10h18"/>',
+  cycle:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  food:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  chart:'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>'
 };
 const icon = (n, s = 24) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 
@@ -863,25 +881,6 @@ function handleSyncText(txt){
   S.ui.tab = 'cycle'; render();
 }
 
-// Zyklusring: vier Phasenbögen, ein Block markiert heute
-function ringSVG(ph, size){
-  const c = 60, r = 50, L = ph.len, out = [];
-  for(const k of PH_KEYS){
-    const [a, b] = ph.ranges[k];
-    if(b < a) continue;
-    const cur = k === ph.key && !ph.overdue;
-    out.push(`<circle cx="${c}" cy="${c}" r="${r}" fill="none" pathLength="${L}" stroke="${cur ? PH[k].text : PH[k].line}"
-      stroke-width="${cur ? 8 : 4}" stroke-dasharray="${b - a + 1 - 0.35} ${L}" stroke-dashoffset="${-(a - 1)}"
-      transform="rotate(-90 ${c} ${c})"/>`);
-  }
-  const ang = (Math.min(ph.cd, L) - 0.5) / L * 2 * Math.PI - Math.PI / 2;
-  const x = c + r * Math.cos(ang), y = c + r * Math.sin(ang);
-  out.push(`<rect x="${(x - 6).toFixed(1)}" y="${(y - 6).toFixed(1)}" width="12" height="12" fill="var(--c100)"/>`);
-  out.push(`<text x="${c}" y="${c + 9}" text-anchor="middle" fill="var(--c100)" font-family="Archivo,sans-serif"
-    font-stretch="125%" font-weight="900" font-size="28" style="font-stretch:125%">${pad(ph.cd)}</text>`);
-  return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-label="Zyklustag ${ph.cd} von ${L}" style="flex-shrink:0">${out.join('')}</svg>`;
-}
-
 // ════════════════════════════════════════════════════════════════════════════
 // WORKOUT-DRAFT
 // ════════════════════════════════════════════════════════════════════════════
@@ -932,13 +931,147 @@ function addSession(s){
   S.sessions.sort((a, b) => a.date.localeCompare(b.date) || (a.finishedAt || '').localeCompare(b.finishedAt || ''));
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// COACH – regelbasierte Double Progression mit Phasen-Modifikator. Läuft komplett lokal.
+//   Alle Sätze am oberen Rand der Range   → mehr Gewicht
+//   In der Range, aber nicht oben         → Gewicht halten, eine Wiederholung mehr
+//   Zweimal in Folge unter der Range      → 7,5 % runter
+//   Drei Einheiten ohne Fortschritt       → Plateau: Alternative oder Pause/Tempo ändern
+//   Follikel/Ovulation pushen · Luteal halten (bei „Stark“ hoch) · Menstruation 10 % weniger
+// ════════════════════════════════════════════════════════════════════════════
+
+// Ziel-Range: '10' → 10–12 (Double Progression braucht Luft nach oben), '8–10' → 8–10, '15/10/5/20' → Pyramide
+function repRange(target){
+  const t = parseTarget(target);
+  if(t.unit !== 'reps' || t.min == null) return null;
+  const nums = (String(target).match(/\d+/g) || []).map(Number);
+  if(nums.length > 2) return {pyr: nums, min: Math.min(...nums), max: Math.max(...nums)};
+  return nums.length === 2 ? {min: t.min, max: t.max} : {min: t.min, max: t.min + 2};
+}
+
+// Letzte n Einheiten einer Übung mit abgehakten Sätzen (neueste zuerst)
+function histFor(id, n = 3, skipId = null){
+  const out = [];
+  for(let i = S.sessions.length - 1; i >= 0 && out.length < n; i--){
+    const s = S.sessions[i]; if(s.id === skipId) continue;
+    const x = s.ex.find(e => e.id === id); if(!x) continue;
+    const sets = x.sets.filter(st => st.done && st.reps != null);
+    if(sets.length) out.push({date: s.date, phase: s.phase, energy: s.energy, sets});
+  }
+  return out;
+}
+
+// Schrittweite: leichte Kurzhanteln 1 kg, sonst 2,5 kg. Bei Unterstützung heißt „mehr“ weniger Hilfe.
+const coachStep = (kg, kind) => kind === 'a' ? 2.5 : kg < 15 ? 1 : 2.5;
+const roundTo = (v, step) => Math.max(0, Math.round(v / step) * step);
+const topKg = (sets, kind) => kind === 'a' ? Math.min(...sets.map(s => s.kg)) : Math.max(...sets.map(s => s.kg));
+const sumReps = sets => sets.reduce((n, s) => n + (s.reps || 0), 0);
+
+// Vorschlag für heute. x = {id, kind, target, alts}, base = Vorbelegung aus letzter Session.
+// Liefert {tag, msg, sets, alt}. alt = die Steigerung, die in der Lutealphase bei „Stark“ freigeschaltet wird.
+function coachFor(x, ph, base){
+  const sets = base.map(s => ({...s}));
+  if(!hasKg(x)) return {tag: 'none', msg: null, sets};
+  const h = histFor(x.id, 3), last = h[0];
+  if(!last) return {tag: 'start', msg: 'Erstes Mal. Trag ein, was geht.', sets};
+  const rr = repRange(x.target);
+  if(!rr) return {tag: 'none', msg: null, sets};
+  const ls = last.sets.filter(s => s.kg != null);
+  if(!ls.length) return {tag: 'none', msg: null, sets};
+
+  const kind = x.kind, top = topKg(ls, kind), step = coachStep(top, kind), dir = kind === 'a' ? -1 : 1;
+  const tgt = i => rr.pyr ? rr.pyr[Math.min(i, rr.pyr.length - 1)] : rr.max;
+  const hitTop = ls.every((s, i) => s.reps >= tgt(i));
+  const underMin = e => e.sets.some(s => s.reps < (rr.pyr ? rr.min : rr.min));
+  const missedTwice = !rr.pyr && h.length >= 2 && underMin(h[0]) && underMin(h[1]);
+  const plateau = h.length >= 3 && h.every(e => topKg(e.sets.filter(s => s.kg != null), kind) === top)
+    && sumReps(h[0].sets) <= sumReps(h[1].sets) && sumReps(h[1].sets) <= sumReps(h[2].sets);
+  // nächster Wert auf dem Scheibenraster: 30 → 32,5 · 17 → 20 · bei Unterstützung 42 → 40
+  const bump = () => sets.forEach(s => { if(s.kg == null) return;
+    s.kg = dir > 0 ? Math.ceil((s.kg + step / 2) / step) * step : Math.max(0, Math.floor((s.kg - step / 2) / step) * step); });
+  const scale = f => sets.forEach(s => { if(s.kg != null) s.kg = roundTo(s.kg * (kind === 'a' ? 2 - f : f), step); });
+  const kgTxt = ss => rangeStr(ss.map(s => s.kg)) + ' kg';
+  const phase = ph && !ph.stale ? ph.key : null, cd = ph?.cd;
+  const copy = () => sets.map(s => ({...s}));
+
+  // Kurze Sätze: Sie stehen direkt unter dem Übungsnamen und müssen auf einen Blick sitzen.
+  const stepTxt = kind === 'a' ? `${fmtNum(step)} kg weniger Hilfe` : `+${fmtNum(step)} kg`;
+  if(phase === 'menstruation'){
+    scale(0.9);
+    return {tag: 'down', sets, msg: cd <= 2 ? 'Heute optional. Wenn ja: 10 % weniger.' : '10 % weniger, nach Gefühl hoch.'};
+  }
+  if(missedTwice){
+    scale(0.925);
+    return {tag: 'down', sets, msg: `Runter. Zweimal unter ${rr.min} Wdh.`};
+  }
+  // Alle Ziel-Wiederholungen geschafft → mehr Gewicht. Das gilt auch, wenn sie dreimal beim selben Gewicht
+  // geblieben ist: Dann war nicht der Körper am Limit, sondern der Plan. Plateau greift nur ohne volle Sätze.
+  if(hitTop){
+    const hold = copy(); bump(); const up = copy();
+    if(phase === 'luteal') return {tag: 'hold', sets: hold, alt: up, msg: `Halten. Bei „Stark“ gibt’s ${stepTxt}.`};
+    return {tag: 'up', sets: up, msg: phase === 'ovulation' ? `${stepTxt}. Peak-Tag, letzter Satz darf ein Bestwert sein.` : `${stepTxt}. Letztes Mal alle Sätze sauber.`};
+  }
+  if(plateau){
+    const alt = x.alts?.[0];
+    return {tag: 'plateau', sets, msg: alt ? `3× gleich. Tausch gegen ${alt} oder Pause 2:30.` : '3× gleich. Pause 2:30, Tempo langsamer.'};
+  }
+  if(!rr.pyr && ls.every(s => s.reps >= rr.min)){
+    sets.forEach((s, i) => { const l = ls[Math.min(i, ls.length - 1)]; s.reps = Math.min(rr.max, (l.reps || rr.min) + 1); });
+    return {tag: 'hold', sets, msg: `Gewicht halten, eine Wdh mehr. Bei ${rr.max} kommt mehr Gewicht.`};
+  }
+  return {tag: 'hold', sets, msg: `Gewicht halten, erst die ${rr.min} Wdh holen.`};
+}
+
+// Bestwert vor einer bestimmten Session (für die PR-Erkennung in der Zusammenfassung)
+function bestKgBefore(id, kind, sessionId){
+  let best = null;
+  for(const s of S.sessions){ if(s.id === sessionId) break;
+    for(const x of s.ex) if(x.id === id) for(const st of x.sets){
+      if(!st.done || st.kg == null) continue;
+      if(best == null || (kind === 'a' ? st.kg < best : st.kg > best)) best = st.kg;
+    } }
+  return best;
+}
+
+// Nach dem Workout: maximal drei Punkte, das Wichtigste zuerst (Bestwert > mehr Gewicht > runter > Plateau > halten)
+function sessionSummary(s){
+  const pts = [];
+  for(const x of s.ex){
+    if(!hasKg(x)) continue;
+    const done = x.sets.filter(st => st.done && st.kg != null); if(!done.length) continue;
+    const prev = bestKgBefore(x.id, x.kind, s.id), top = topKg(done, x.kind);
+    const pr = prev != null && (x.kind === 'a' ? top < prev : top > prev);
+    const c = coachFor(x, null, done.map(st => ({reps: st.reps, kg: st.kg})));
+    const nxt = rangeStr(c.sets.map(st => st.kg)) + ' kg';
+    if(pr) pts.push({r: 0, t: `${x.name}: ${fmtNum(top)} kg, neuer Bestwert.`});
+    else if(c.tag === 'up') pts.push({r: 1, t: `${x.name}: nächstes Mal ${nxt}.`});
+    else if(c.tag === 'down') pts.push({r: 2, t: `${x.name}: nächstes Mal runter auf ${nxt}, sauber durchziehen.`});
+    else if(c.tag === 'plateau') pts.push({r: 3, t: `${x.name}: seit drei Einheiten gleich. Nächstes Mal was ändern.`});
+    else if(c.tag === 'hold') pts.push({r: 4, t: `${x.name}: Gewicht halten, Wiederholungen hoch.`});
+  }
+  return pts.sort((a, b) => a.r - b.r).slice(0, 3).map(p => p.t);
+}
+
+// Startseite: Tage seit dem letzten Mal pro Workout, und ob Charlotte in der Lutealphase oft müde ist
+function daysSinceWorkout(wid){
+  for(let i = S.sessions.length - 1; i >= 0; i--) if(S.sessions[i].wid === wid) return daysBetween(S.sessions[i].date, today());
+  return null;
+}
+function tiredInLuteal(){
+  const l = S.sessions.filter(s => s.phase === 'luteal' && s.energy);
+  return l.length >= 3 && l.filter(s => s.energy === 'muede').length / l.length >= 0.6;
+}
+
 function newSession(wid){
   const wk = S.workouts[wid], ph = getPhase();
   const ex = [], blocks = [];
   for(const e of wk.ex){
     const def = S.exercises[e.id]; if(!def) continue;
-    ex.push({id: e.id, name: def.n, kind: def.k, target: e.target, unit: parseTarget(e.target).unit,
-      alts: e.alts || [], sets: planSets(e.id, e.sets, e.target)});
+    const x = {id: e.id, name: def.n, kind: def.k, target: e.target, unit: parseTarget(e.target).unit, alts: e.alts || []};
+    const c = coachFor(x, ph, planSets(e.id, e.sets, e.target));
+    x.sets = c.sets.map(s => mkSet(s.reps, s.kg));
+    x.coach = {tag: c.tag, msg: c.msg, alt: c.alt ? c.alt.map(s => ({reps: s.reps, kg: s.kg})) : null};
+    ex.push(x);
     // aufeinanderfolgende Übungen mit gleichem Abschnitt bilden einen Block
     const sec = e.sec || 'Übungen', last = blocks[blocks.length - 1];
     if(last && last.lb === sec) last.ex.push(ex.length - 1); else blocks.push({lb: sec, ss: false, ex: [ex.length - 1]});
@@ -964,9 +1097,11 @@ function setsStr(x, sets){
   }
   return out;
 }
+// Zeile unter dem Übungsnamen: der Coach-Satz, solange offen. Fertig → was geschafft wurde.
 function exSummary(x){
   const done = x.sets.filter(s => s.done);
-  return done.length ? `Geschafft: ${setsStr(x, done)}` : `Heute: ${setsStr(x, x.sets)}`;
+  if(done.length && done.length === x.sets.length) return `Geschafft: ${setsStr(x, done)}`;
+  return x.coach?.msg || setsStr(x, x.sets);
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -980,7 +1115,7 @@ function applyPhColors(){
 
 function go(tab){ S.ui.tab = tab; flash = null; saveSoon(); render(); }
 
-const TABS = [['home','Heute'],['week','Woche'],['cycle','Zyklus'],['food','Essen'],['history','Historie']];
+const TABS = [['home','home','Heute'],['week','calendar','Woche'],['cycle','cycle','Zyklus'],['food','food','Essen'],['history','chart','Historie']];
 
 function render(){
   applyPhColors();
@@ -991,8 +1126,8 @@ function render(){
   renderBanner();
   if(tab !== 'done'){
     const cur = {workout: 'home', activity: 'home', wkedit: 'week', session: 'history'}[tab] || tab;
-    $('app').insertAdjacentHTML('beforeend', `<nav>${TABS.map(([id, lb]) =>
-      `<button class="ntb${cur === id ? ' on' : ''}" data-act="go" data-v="${id}">${lb}</button>`).join('')}</nav>`);
+    $('app').insertAdjacentHTML('beforeend', `<nav>${TABS.map(([id, ic, lb]) =>
+      `<button class="ntb${cur === id ? ' on' : ''}" data-act="go" data-v="${id}" aria-label="${lb}" title="${lb}">${icon(ic, 28)}</button>`).join('')}</nav>`);
   }
   const M = $('M');
   if(tab === 'workout' && S.active){
@@ -1006,7 +1141,8 @@ function renderBanner(){
   b.innerHTML = storageError ? `<div class="banner">${esc(storageError)}</div>` : '';
 }
 
-const topBar = right => `<div class="top"><div class="brand">${mark(28)}<span class="disp wm">CIRCA</span></div>${right || ''}</div>`;
+// Kopfzeile: nur das Zeichen, rechts optional eine Info. Die Wortmarke bleibt dem App-Icon vorbehalten.
+const topBar = right => `<div class="top"><span style="color:var(--c200)">${mark(28)}</span>${right || ''}</div>`;
 
 // ── HEUTE ────────────────────────────────────────────────────────────────────
 function periodAskCard(text){
@@ -1025,11 +1161,24 @@ function rHome(el){
   const a = S.active;
   const okPh = ph && !ph.stale;
 
-  // Ein Satz, das Wichtigste zuerst. Der echte Coach-Satz kommt mit der Coach-Engine.
+  // Wochenplan zuerst, dann die Phasen-Reihenfolge, darin das Workout, das am längsten her ist
+  const planned = plan[td];
+  const W = S.workouts;
+  const since = Object.fromEntries(Object.keys(W).map(w => [w, daysSinceWorkout(w)]));
+  const byGap = (a, b) => (since[b] ?? 999) - (since[a] ?? 999);
+  const phaseOrder = (okPh ? ph.o : ['glutes','pull','push']).filter(w => W[w]).sort(byGap);
+  const order = [...new Set([planned, ...phaseOrder, ...Object.keys(W).sort(byGap)].filter(w => w && W[w]))];
+  const first = order[0], rest = order.slice(1);
+
+  // Ein Satz, das Wichtigste zuerst: Pause, Muster der letzten Wochen, sonst der Phasen-Satz
   const lastS = S.sessions[S.sessions.length - 1];
-  const coach = okPh && ph.overdue ? 'Periode überfällig? Kurz in Health checken.'
+  const stale = Object.keys(W).filter(w => since[w] != null && since[w] >= 7).sort(byGap)[0];
+  let coach = okPh && ph.overdue ? 'Periode überfällig? Kurz in Health checken.'
     : lastS && daysBetween(lastS.date, td) >= 10 ? 'Da bist du ja wieder. Los geht’s.'
-    : okPh ? ph.tip : 'Erst der Zyklus, dann die Gewichte. Zehn Sekunden, versprochen.';
+    : !okPh ? 'Erst der Zyklus, dann die Gewichte. Zehn Sekunden, versprochen.'
+    : stale ? `${W[stale].lb} hattest du seit ${since[stale]} Tagen nicht. ${ph.key === 'luteal' ? 'Lutealphase: Form zählt, nicht die Zahl.' : ph.key === 'menstruation' ? 'Sanft reicht heute.' : 'Heute passt das.'}`
+    : ph.tip;
+  if(okPh && ph.key === 'luteal' && tiredInLuteal()) coach += ' Du loggst hier oft „Müde“, deshalb plane ich ohne Steigerung.';
 
   let phHTML;
   if(!ph) phHTML = periodAskCard('Wann hat deine letzte Periode angefangen?');
@@ -1038,12 +1187,6 @@ function rHome(el){
     <p class="lbl" style="color:var(--ph-text)">${ph.lb}${ph.overdue ? ' · überfällig?' : ''}</p>
     <div class="cyc"><span class="disp">${pad(ph.cd)}</span><span class="of">/ ${ph.len}</span></div>
     ${cycleStrip(ph)}`;
-
-  // Wochenplan zuerst, dann Phasen-Empfehlung
-  const planned = plan[td];
-  const W = S.workouts;
-  const order = [...new Set([planned, ...(okPh ? ph.o : ['push','pull','glutes']), ...Object.keys(W)].filter(w => w && W[w]))];
-  const first = order[0], rest = order.slice(1);
 
   const resume = a ? (() => {
     const all = a.ex.reduce((n, x) => n + x.sets.length, 0), dn = a.ex.reduce((n, x) => n + x.sets.filter(s => s.done).length, 0);
@@ -1099,27 +1242,27 @@ function backupHint(){
 
 // ── WOCHE ────────────────────────────────────────────────────────────────────
 function rWeek(el){
-  const wd = weekDates();
+  const wd = weekDates(), td = today();
   const days = S.weekPlan && S.weekPlan.key === wkKey() ? S.weekPlan.days : {};
+  const done = {}; for(const s of S.sessions) if(wd.includes(s.date)) done[s.date] = s.wl;
+  const opts = Object.keys(S.workouts).map(w => [w, S.workouts[w].lb]);
   const rows = wd.map((date, i) => {
     const sel = days[date] || '';
-    const opts = [['', 'Frei'], ...Object.keys(S.workouts).map(w => [w, S.workouts[w].lb])];
-    return `<div class="wday">
-      <p class="lbl" style="margin-bottom:8px">${DAY_AB[i]} · ${fmtDate(date, {day:'2-digit', month:'2-digit'})}${date === today() ? ' · heute' : ''}</p>
-      <div class="chips">${opts.map(([w, lb]) => `<button class="chip${sel === w ? ' on' : ''}" data-act="pickDay" data-d="${date}" data-v="${w}">${esc(lb)}</button>`).join('')}</div>
-    </div>`;
+    // Tag ist schon trainiert → nur anzeigen, was war. Sonst Chips zum Planen.
+    const body = done[date]
+      ? `<span class="sub" style="color:var(--ph-text)">${icon('check', 16)}</span><span class="txt">${esc(done[date])}</span>`
+      : `<div class="chips">${opts.map(([w, lb]) => `<button class="chip${sel === w ? ' on' : ''}" data-act="pickDay" data-d="${date}" data-v="${sel === w ? '' : w}">${esc(lb)}</button>`).join('')}</div>`;
+    return `<div class="wday${date === td ? ' today' : ''}">
+      <span class="dn">${DAY_AB[i]}<br><small>${fmtDate(date, {day:'2-digit', month:'2-digit'})}</small></span>${body}</div>`;
   }).join('');
   const wlist = Object.values(S.workouts).map(w => `<button class="row" style="width:100%;text-align:left" data-act="editWorkout" data-v="${w.id}">
-    <div><p class="txt" style="color:var(--c100);font-weight:600">${esc(w.lb)}</p>
-      <p class="sub">${w.ex.length} Übungen · ${w.dur} min</p></div><span class="sub">Bearbeiten</span></button>`).join('');
+    <span class="txt" style="color:var(--c100)">${esc(w.lb)}</span><span class="sub">${w.ex.length} Übungen · ${w.dur} min</span></button>`).join('');
   el.innerHTML = `
     ${topBar()}
     <h1 class="t1">Woche</h1>
-    <p class="sub" style="margin-top:4px">Neue Woche, neuer Plan. „Heute“ schlägt dir den geplanten Tag als Erstes vor.</p>
-    <div class="card sec">${rows}</div>
-    <div class="sec"><p class="lbl">Deine Workouts</p>${wlist}</div>
-    <button class="btn2" style="margin-top:8px" data-act="editWorkout" data-v="">Neues Workout ${icon('plus')}</button>
-    <button class="btn sec" data-act="go" data-v="home">Fertig ${icon('arrowR')}</button>`;
+    <div class="sec">${rows}</div>
+    <div class="sec"><p class="lbl">Workouts</p>${wlist}
+      <button class="btn3" style="margin-top:8px" data-act="editWorkout" data-v="">${icon('plus', 18)} Neues Workout</button></div>`;
 }
 
 // ── ZYKLUS ───────────────────────────────────────────────────────────────────
@@ -1129,29 +1272,27 @@ function rCycle(el){
     `<div class="row"><span class="txt">${fmtDate(p, {weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'})}</span>
       <button class="xbtn" data-act="delPeriod" data-v="${p}" aria-label="Eintrag löschen">${icon('x', 20)}</button></div>`).join('');
   const ok = ph && !ph.stale;
+  const stats = st.n ? `Ø ${st.len} Tage aus ${st.n} ${st.n === 1 ? 'Zyklus' : 'Zyklen'} · Periode ~${st.periodLen} Tage` : `Ø ${st.len} Tage (Standard, bis zwei Starts drin sind)`;
   el.innerHTML = `
     ${topBar()}
-    <h1 class="t1">Zyklus</h1>
-    ${flash ? `<div class="hero sec" style="cursor:default"><p class="lbl">Health-Sync</p><p class="txt" style="color:var(--b900);margin-top:6px">${esc(flash)}</p></div>` : ''}
-    ${ok ? `<div class="phase sec">${ringSVG(ph, 128)}<div>
-      <p class="lbl">${ph.lb} · ${ph.tag}</p>
-      <p class="disp big" style="margin-top:6px">${pad(ph.cd)}</p>
-      <p class="sub">${ph.overdue ? 'Periode überfällig? Kurz in Health checken.' : `Tag ${ph.cd} von ~${ph.len} · nächste Periode in ~${ph.left} Tagen`}</p>
-    </div></div>
-    <div class="chips sec">${PH_KEYS.map(k => `<span class="chip" style="${k === ph.key ? `background:${PH[k].fill};border-color:${PH[k].line};color:${PH[k].text}` : ''}">${PH[k].lb.replace('phase', '')} ${ph.ranges[k][0]}–${ph.ranges[k][1]}</span>`).join('')}</div>` : ''}
+    ${flash ? `<div class="hero slim" style="cursor:default;margin-bottom:20px"><p class="lbl">Health-Import</p><p class="txt" style="color:var(--b900);margin-top:6px">${esc(flash)}</p></div>` : ''}
+    ${ok ? `
+    <p class="lbl" style="color:var(--ph-text)">${ph.lb} · ${ph.tag}${ph.overdue ? ' · überfällig?' : ''}</p>
+    <div class="cyc"><span class="disp">${pad(ph.cd)}</span><span class="of">/ ${ph.len}</span></div>
+    ${cycleStrip(ph)}
+    <div class="legend">${PH_KEYS.map(k => `<span class="${k === ph.key ? 'on' : ''}">${PH[k].lb.replace('phase', '')} <b>${ph.ranges[k][0]}–${ph.ranges[k][1]}</b></span>`).join('')}</div>
+    <p class="coach">${ph.overdue ? 'Periode überfällig? Kurz in Health checken.' : `Nächste Periode in etwa ${ph.left} Tagen.`}</p>
+    <p class="sub" style="margin-top:4px">${stats}</p>` : `<h1 class="t1">Zyklus</h1><p class="sub" style="margin-top:4px">${stats}</p>`}
     <div class="sec">
       <p class="lbl">Periode gestartet am</p>
-      <input type="date" id="pdi" value="${today()}" max="${today()}">
-      <button class="btn" style="margin-top:8px" data-act="addPeriodInput">Eintragen ${icon('arrowR')}</button>
+      <div class="row" style="border:none;padding:0;gap:8px">
+        <input type="date" id="pdi" value="${today()}" max="${today()}">
+        <button class="btn" style="width:auto;flex-shrink:0;padding:0 20px" data-act="addPeriodInput" aria-label="Eintragen">${icon('check')}</button>
+      </div>
       ${st.periods.length < 3 ? `<p class="tiny" style="margin-top:8px">Trag die letzten 3–4 Starts aus Health → Cycle Tracking ein, dann rechne ich mit deiner echten Zykluslänge.</p>` : ''}
     </div>
-    <div class="card sec">
-      <p class="lbl" style="margin-bottom:8px">Dein Zyklus</p>
-      <p class="txt">${st.n ? `Ø ${st.len} Tage aus ${st.n} ${st.n === 1 ? 'Zyklus' : 'Zyklen'}` : `Ø ${st.len} Tage, Standardwert`}</p>
-      <p class="sub">${st.n ? `Periode ~${st.periodLen} Tage${st.nLens ? ' (aus Health)' : ''}.` : 'Ab zwei Periodenstarts rechne ich mit deinen echten Daten.'}</p>
-    </div>
     ${list ? `<div class="sec"><p class="lbl">Einträge</p>${list}</div>` : ''}
-    <details class="sec"><summary class="tiny" style="min-height:44px;display:flex;align-items:center">Aus Apple Health einfügen (optional, braucht den Kurzbefehl „Circa Sync“)</summary>
+    <details class="sec"><summary class="tiny" style="min-height:44px;display:flex;align-items:center">Aus Apple Health einfügen (optional)</summary>
       <textarea id="synctxt" rows="4" placeholder="Text aus dem Kurzbefehl hier einsetzen"></textarea>
       <button class="btn2" style="margin-top:8px" data-act="syncText">Übernehmen</button>
     </details>
@@ -1205,16 +1346,18 @@ function rHistory(el){
   }).join('');
   const lb = S.meta.lastBackup;
   const age = lb ? Math.floor(daysBetween(lb.slice(0, 10), today())) : null;
+  const n = S.sessions.length;
   el.innerHTML = `
-    ${topBar()}
+    ${topBar(`<span class="sub">${n} Einträge</span>`)}
     <h1 class="t1">Historie</h1>
     ${rows ? `<div class="sec">${rows}</div>` : `<p class="txt sec">Noch nichts geloggt. Das ändert sich heute.</p>`}
-    <div class="card sec">
-      <p class="lbl" style="margin-bottom:8px">Backup</p>
-      <p class="sub">${lb ? `Letztes Backup: ${age === 0 ? 'heute' : `vor ${age} Tag${age === 1 ? '' : 'en'}`}.` : 'Noch kein Backup.'}
-        Die Datei enthält alles: Sessions, Workouts, Zyklus. Am besten in iCloud Drive ablegen.</p>
-      <button class="btn" style="margin-top:12px" data-act="exportBackup">Backup sichern ${icon('arrowR')}</button>
-      <button class="btn2" style="margin-top:8px" data-act="importBackup">Backup einspielen</button>
+    <div class="sec">
+      <p class="lbl">Backup · ${lb ? (age === 0 ? 'heute' : `vor ${age} Tag${age === 1 ? '' : 'en'}`) : 'noch keins'}</p>
+      <div class="links">
+        <button class="btn3" data-act="exportBackup">${icon('arrowR', 18)} Sichern</button>
+        <button class="btn3" data-act="importBackup">Einspielen</button>
+      </div>
+      <p class="tiny" style="margin-top:4px">Eine Datei mit allem: Sessions, Workouts, Zyklus. Am besten in iCloud Drive ablegen.</p>
       <input type="file" id="impf" accept=".json,application/json" hidden>
     </div>`;
 }
@@ -1235,6 +1378,8 @@ function rSession(el){
       <span class="lbl">${fmtDate(s.date, {weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'})}</span></div>
     <h1 class="t1">${esc(s.wl)}</h1>
     <p class="sub" style="margin-top:4px">${[s.phase ? `${PH[s.phase].lb} · Tag ${s.cycleDay}` : null, e ? 'Energie: ' + e : null, s.src === 'notion' ? 'aus Notion übernommen' : null].filter(Boolean).join(' · ') || '&nbsp;'}</p>
+    ${s.summary?.length ? `<div class="sec"><p class="lbl">Nächstes Mal</p>
+      <div class="stack">${s.summary.map(t => `<p class="tip">${esc(t)}</p>`).join('')}</div></div>` : ''}
     <div class="sec">${body}</div>
     <button class="btn3 center sec" style="width:100%" data-act="delSession" data-v="${s.id}">Eintrag löschen</button>`;
 }
@@ -1360,17 +1505,14 @@ function paintSets(e){
 
 function exBody(e){
   const x = S.active.ex[e];
-  const last = lastDoneSets(x.id);
   const one = !hasKg(x);
-  return `${last ? `<p class="sub" style="margin-bottom:4px">Zuletzt ${fmtDate(last.date, {day:'2-digit', month:'2-digit'})}: ${setsStr(x, last.sets)}</p>` : ''}
-    <p class="tiny">Ziel: ${x.sets.length}× ${esc(x.target)}</p>
-    <div class="sets-hd${one ? ' one' : ''}"><span class="lbl" style="padding-left:12px">Satz</span><span class="lbl">${unitLabel(x.unit)}</span>${one ? '' : `<span class="lbl">${x.kind === 'a' ? 'kg Hilfe' : 'kg'}</span>`}<span></span></div>
+  return `<div class="sets-hd${one ? ' one' : ''}"><span class="lbl" style="padding-left:12px">Satz</span><span class="lbl">${unitLabel(x.unit)}</span>${one ? '' : `<span class="lbl">${x.kind === 'a' ? 'kg Hilfe' : 'kg'}</span>`}<span></span></div>
     ${x.sets.map((_, i) => setRow(e, i)).join('')}
     <div class="set-btns">
       <button class="btn3" data-act="delSet" data-e="${e}">${icon('minus', 18)} Satz weg</button>
       <button class="btn3" data-act="addSet" data-e="${e}">${icon('plus', 18)} Satz dazu</button>
     </div>
-    ${x.alts?.length ? `<p class="lbl" style="margin:12px 0 8px">Alternativen</p><div class="chips">${x.alts.map(a => `<span class="chip">${esc(a)}</span>`).join('')}</div>` : ''}`;
+    ${x.alts?.length ? `<p class="tiny" style="margin-top:6px">Alternativ: ${x.alts.map(esc).join(' · ')}</p>` : ''}`;
 }
 
 const progText = x => `${x.sets.filter(s => s.done).length}/${x.sets.length}`;
@@ -1383,7 +1525,7 @@ function rWorkout(el){
     <div class="stack">${blk.ex.map(e => { const x = a.ex[e], open = a.open.includes(e), full = x.sets.every(s => s.done); return `<div class="ex" id="ex_${e}">
       <button class="ex-hd" data-act="tog" data-e="${e}">
         <div style="flex:1;min-width:0"><p class="nm">${esc(x.name)}</p>
-          <p class="sub" id="sum_${e}">${exSummary(x)}</p></div>
+          <p class="sub tipline ${x.coach?.tag || ''}" id="sum_${e}">${exSummary(x)}</p></div>
         <span class="prog${full ? ' full' : ''}" id="pg_${e}">${progText(x)}</span>
         <span class="chev${open ? ' o' : ''}" id="ch_${e}">${icon('chevron')}</span>
       </button>
@@ -1397,10 +1539,10 @@ function rWorkout(el){
       <span class="lbl" style="text-align:right">${a.date === today() ? '' : fmtDate(a.date, {day:'2-digit', month:'2-digit'}) + ' · '}${phLb}</span>
     </div>
     <h1 class="t1">${esc(a.wl)}</h1>
-    ${wu ? `<div class="card sec"><p class="lbl" style="margin-bottom:4px">Warm-up</p><p class="txt">${esc(wu)}</p></div>` : ''}
+    ${wu ? `<p class="sub" style="margin-top:4px">Warm-up: ${esc(wu)}</p>` : ''}
     ${blocks}
     <div class="sec">
-      <p class="lbl">Wie war deine Energie?</p>
+      <p class="lbl">Energie heute</p>
       <div class="egrid">${ENERGY.map(([k, lb]) => `<button class="ebtn${a.energy === k ? ' on' : ''}" data-act="energy" data-v="${k}">${lb}</button>`).join('')}</div>
     </div>
     <button class="btn sec" data-act="finish">Workout abschließen ${icon('arrowR')}</button>
@@ -1418,7 +1560,7 @@ function setOpen(e, open){
 
 function refreshEx(e){
   const x = S.active.ex[e];
-  const sum = $('sum_' + e); if(sum) sum.textContent = exSummary(x);
+  const sum = $('sum_' + e); if(sum){ sum.textContent = exSummary(x); sum.className = `sub tipline ${x.sets.every(s => s.done) ? '' : (x.coach?.tag || '')}`; }
   const pg = $('pg_' + e); if(pg){ pg.textContent = progText(x); pg.classList.toggle('full', x.sets.every(s => s.done)); }
   paintSets(e);
 }
@@ -1441,10 +1583,11 @@ function rDone(el){
       ${stat(min > 0 && min < 600 ? min : '–', 'Minuten')}
       ${stat(week, 'Diese Woche')}
     </div>
+    ${s.summary?.length ? `<div class="sec"><p class="lbl">Nächstes Mal</p>
+      <div class="stack">${s.summary.map(t => `<p class="tip">${esc(t)}</p>`).join('')}</div></div>` : ''}
     <div class="sec">${s.ex.filter(x => x.sets.some(st => st.done)).map(x =>
       `<div class="row"><span class="txt" style="color:var(--c100)">${esc(x.name)}</span><span class="sub" style="text-align:right">${setsStr(x, x.sets.filter(st => st.done))}</span></div>`).join('')
       || '<p class="sub">Keine Sätze abgehakt.</p>'}</div>
-    <p class="tiny sec" style="text-align:center">Was du nächstes Mal draufpackst, sagt dir bald der Coach.</p>
     <button class="btn sec" data-act="go" data-v="home">Zurück zu Heute ${icon('arrowR')}</button>`;
 }
 
@@ -1488,8 +1631,16 @@ const ACT = {
     x.sets.pop(); $('eb_' + e).innerHTML = exBody(e); refreshEx(e); saveSoon();
   },
   energy: (d, btn) => {
-    S.active.energy = d.v;
-    document.querySelectorAll('.ebtn').forEach(b => b.classList.toggle('on', b === btn)); saveSoon();
+    const a = S.active; a.energy = d.v;
+    document.querySelectorAll('.ebtn').forEach(b => b.classList.toggle('on', b === btn));
+    // Lutealphase + „Stark“: die zurückgehaltene Steigerung freischalten, aber nur bei unangetasteten Übungen
+    if(d.v === 'stark') a.ex.forEach((x, e) => {
+      if(!x.coach?.alt || x.sets.some(s => s.done || s.touched)) return;
+      x.sets = x.coach.alt.map(s => mkSet(s.reps, s.kg)); x.coach.alt = null; x.coach.tag = 'up';
+      x.coach.msg = 'Stark drauf? Dann mehr. Keine Diskussion.';
+      const bd = $('eb_' + e); if(bd) bd.innerHTML = exBody(e); refreshEx(e);
+    });
+    saveSoon();
   },
   finish: () => {
     const a = S.active;
@@ -1501,7 +1652,9 @@ const ACT = {
       ex: a.ex.map(x => ({id: x.id, name: x.name, kind: x.kind, unit: x.unit, target: x.target,
         sets: x.sets.map(s => ({reps: s.reps, kg: s.kg, done: s.done}))}))
     };
-    addSession(session); S.active = null; S.ui.lastSessionId = session.id; S.ui.tab = 'done';
+    addSession(session);
+    session.summary = sessionSummary(session);
+    S.active = null; S.ui.lastSessionId = session.id; S.ui.tab = 'done';
     saveNow(); render();
   },
   discard: () => {
