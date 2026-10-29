@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Circa">
 <meta name="theme-color" content="#2A0710">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&family=DM+Sans:wght@400;500;600;700&display=swap">
 <title>Circa</title>
 <style>
 /* ── CIRCA Brand-System, Stufe 2 (Oktober 2026) ─────────────────────────── */
@@ -21,11 +21,12 @@
   --c100:#E6F0FA;--c200:#BFD6EF;--c300:#94AAC6;--c400:#6F86A6;--cream:#F4EEE8;
   --ph-text:#BFD6EF;--ph-fill:#52303C;--ph-line:#7D7182;
   --ease:cubic-bezier(.2,.8,.2,1);
+  /* Eine Schriftfamilie: Archivo Expanded für Zahlen und Titel, Archivo normal für Text */
   --display:'Archivo','Helvetica Neue',Arial,sans-serif;
-  --ui:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+  --ui:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;border-radius:0}
-html,body{height:100%;overflow:hidden;background:var(--b900);color:var(--c200);font-family:var(--ui);font-size:17px;line-height:1.45}
+html,body{height:100%;overflow:hidden;background:var(--b900);color:var(--c200);font-family:var(--ui);font-stretch:100%;font-size:16px;line-height:1.45}
 button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
 button,input,a,summary{touch-action:manipulation}   /* kein Doppeltipp-Zoom, keine 300-ms-Wartezeit */
 #app{height:100%;display:flex;flex-direction:column;overflow:hidden}
@@ -37,8 +38,8 @@ button,input,a,summary{touch-action:manipulation}   /* kein Doppeltipp-Zoom, kei
 /* Typo */
 .disp{font-family:var(--display);font-stretch:125%;font-weight:900;line-height:1;letter-spacing:-.01em}
 .t1{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:28px;line-height:1.1;color:var(--c100)}
-.lbl{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--c300);line-height:1.3}
-.txt{font-size:17px;color:var(--c200)}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--c300);line-height:1.3}
+.txt{font-size:16px;color:var(--c200)}
 .sub{font-size:14px;color:var(--c300)}
 .tiny{font-size:12px;color:var(--c400)}
 
@@ -83,6 +84,7 @@ input[type=date]{display:block}
 
 /* Kopf */
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;min-height:44px}
+.top>*{display:flex;align-items:center;line-height:1}
 .brand{display:flex;align-items:center;gap:8px;color:var(--c200)}
 .wm{font-size:20px}
 
@@ -95,19 +97,24 @@ input[type=date]{display:block}
 .wcard{display:block;width:100%;text-align:left;background:var(--b800);padding:16px;min-height:76px}
 .wcard:active{background:var(--b700)}
 .wcard b{display:block;font-size:15px;font-weight:600;color:var(--c100)}
-.cday{display:flex;align-items:flex-end;gap:10px;margin-top:4px}
-.cday .disp{font-size:clamp(104px,34vw,152px);color:var(--c200);line-height:.85}
-.cday .of{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:15px;color:var(--c300);padding-bottom:6px}
-.bars{display:flex;align-items:flex-end;gap:2px;height:48px;margin-top:20px}
-.bars i{flex:1;background:var(--c300)}
-.bars i.past{background:var(--c400);opacity:.55}
-.bars i.up{background:var(--c200)}
-.bars i.now{background:var(--c100);flex:1.8}
-.bar-lbl{position:relative;height:18px;margin-top:6px}
-.bar-lbl span{position:absolute;top:0;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--c400)}
-.bar-lbl span.on{color:var(--c100)}
-.coach{font-size:20px;font-weight:700;line-height:1.3;color:var(--c100)}
-.wcard.sm{min-height:56px;display:flex;align-items:center}
+/* Zyklus kompakt: Zahl + ein Streifen mit vier Phasen-Segmenten, Block markiert heute */
+.cyc{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.cyc .disp{font-size:56px;color:var(--c100)}
+.cyc .of{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:14px;color:var(--c300)}
+.strip{position:relative;display:flex;gap:3px;height:6px;margin-top:14px}
+.strip i{background:var(--b700)}
+.strip i.on{background:var(--ph-line)}
+.strip b{position:absolute;top:-3px;width:12px;height:12px;background:var(--c100);transform:translateX(-50%)}
+.coach{font-size:16px;line-height:1.4;color:var(--c100);margin-top:14px}
+.focus{display:grid;grid-template-columns:64px 1fr;gap:10px 12px;margin-top:16px;padding-top:16px;border-top:2px solid var(--b700)}
+.focus .lbl{font-size:11px;padding-top:2px;color:var(--c400)}
+.focus p{font-size:14px;line-height:1.4;color:var(--c200)}
+.hero.slim{padding:14px 16px}
+.hero.slim .t1{margin:2px 0 0;font-size:26px}
+.hero.slim .go{border:none;padding:0;margin-left:12px}
+.hero.slim .row{display:flex;align-items:center;justify-content:space-between}
+.hero.slim .why{font-size:14px;line-height:1.4;color:var(--b700);margin-top:8px}
+.links{display:flex;gap:16px;flex-wrap:wrap}
 .phase{display:flex;gap:16px;align-items:center;background:var(--ph-fill);border-left:4px solid var(--ph-line);padding:16px}
 .phase .lbl{color:var(--ph-text)}
 
@@ -162,7 +169,7 @@ input[type=date]{display:block}
 /* Tab-Bar · 49 pt + Safe Area */
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--b950);display:flex;
   padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);z-index:100}
-.ntb{flex:1;height:49px;display:flex;align-items:center;justify-content:center;
+.ntb{flex:1;height:49px;display:flex;align-items:center;justify-content:center;padding:0 2px;
   font-size:13px;font-weight:600;color:var(--c400)}
 .ntb.on{color:var(--c100);font-weight:700}
 </style>
@@ -182,21 +189,70 @@ const DEFAULT_CYCLE_LEN = 29;
 const DEFAULT_PERIOD_LEN = 5;
 
 // ── PHASEN (Farben laut Brand-System, Seite 14) ─────────────────────────────
+// tip = der eine Coach-Satz · focus = worauf achten · o = Workout-Reihenfolge · rec = warum dieses Workout heute
 const PH = {
   menstruation:{text:'#FF8A96',fill:'#5D222C',line:'#9D4B56',lb:'Menstruation',tag:'Sanft',
     tip:'Tag 1–2 darf’s locker sein. Ab Tag 3 wird trainiert, nach Gefühl.',
-    food:'Eisenreich: Hülsenfrüchte, Spinat, rotes Fleisch',o:['pull','push','glutes']},
+    focus:[['Training','Tag 1–2 locker oder frei. Ab Tag 3 normal, mit etwa 10 % weniger Gewicht als geplant.'],
+           ['Körper','Schlaf und Wärme. Bei Krämpfen hilft Bewegung mehr als Couch.']],
+    o:['pull','push','glutes'],
+    rec:{pull:'Pull passt: Zug statt Druck, der Bauch bleibt entspannt.',
+         push:'Push geht. Core-Übungen nach Gefühl kürzen.',
+         glutes:'Glutes nur, wenn der Bauch mitmacht. Hip Thrusts leichter fahren.'}},
   follikel:{text:'#BFD6EF',fill:'#52303C',line:'#7D7182',lb:'Follikelphase',tag:'Aufbau',
     tip:'Energie steigt. Jetzt wird schwer gehoben, nicht gekuschelt.',
-    food:'Proteinreich, Ballaststoffe & Fermentiertes',o:['glutes','push','pull']},
+    focus:[['Training','Östrogen steigt, Kraft auch. Progression fahren: +2,5 kg, wenn alle Sätze sauber waren.'],
+           ['Körper','Erholung geht schnell. Drei Einheiten die Woche sind drin.']],
+    o:['glutes','push','pull'],
+    rec:{glutes:'Glutes zuerst: schwere Hip Thrusts zahlen sich jetzt aus.',
+         push:'Push: Brustpresse mit Luft nach oben? Drauf damit.',
+         pull:'Pull: Assisted Pull-ups mit weniger Hilfe testen.'}},
   ovulation:{text:'#F4EEE8',fill:'#5B343B',line:'#977D7F',lb:'Ovulation',tag:'Peak',
     tip:'Peak-Tage. Wenn ein PR fällt, dann jetzt.',
-    food:'Antioxidantien & Omega-3: Beeren, Lachs, Avocado',o:['glutes','pull','push']},
+    focus:[['Training','Peak-Kraft. Schwere Top-Sätze, PR-Versuch erlaubt.'],
+           ['Körper','Bänder sind lockerer. Aufwärmen nicht abkürzen, Knie bei Step-ups und Squats stabil halten.']],
+    o:['glutes','pull','push'],
+    rec:{glutes:'Glutes: Hip-Thrust-PR. Heute ist der Tag.',
+         pull:'Pull: Latzug schwerer als letztes Mal, dann sauber ausrollen.',
+         push:'Push: Brustpresse ans Limit, Schulter vorher gut warm.'}},
   luteal:{text:'#8FA6C4',fill:'#492735',line:'#65596D',lb:'Lutealphase',tag:'Halten',
     tip:'Lutealphase heißt Gewicht halten, nicht Couch.',
-    food:'Magnesium & komplexe Kohlenhydrate: Nüsse, Hafer, Süßkartoffel',o:['pull','push','glutes']}
+    focus:[['Training','Gewicht halten, Technik und Volumen. Mehr nur, wenn die Energie „Stark“ ist.'],
+           ['Körper','Temperatur und Puls sind höher. Längere Pausen zwischen den Sätzen, mehr Schlaf.']],
+    o:['pull','push','glutes'],
+    rec:{pull:'Pull: moderate Last, saubere Wiederholungen.',
+         push:'Push: gleiche Gewichte wie letztes Mal, Form zählt.',
+         glutes:'Glutes: Pyramide fahren, kein neuer Top-Satz nötig.'}}
 };
 const PH_KEYS = ['menstruation','follikel','ovulation','luteal'];
+
+// ── ESSEN (eigener Reiter) ───────────────────────────────────────────────────
+const NUTRI = {
+  menstruation:{h:'Auffüllen',tips:[
+    'Eisen auffüllen: Linsen, Kichererbsen, Spinat, rotes Fleisch, Kürbiskerne.',
+    'Vitamin C dazu (Paprika, Zitrus, Brokkoli), dann nimmt der Körper das Eisen besser auf.',
+    'Warm und leicht: Suppen, Eintöpfe, Hafer. Kaffee nicht direkt zum Essen, er bremst die Eisenaufnahme.',
+    'Magnesium gegen Krämpfe: Nüsse, Kakao, Vollkorn.'],
+    foods:['Linsen','Spinat','Rotes Fleisch','Kürbiskerne','Paprika','Hafer','Kakao']},
+  follikel:{h:'Aufbauen',tips:[
+    'Protein hoch: 1,6–2 g pro kg Körpergewicht, auf 3–4 Mahlzeiten verteilt. Nach dem Training 30–40 g.',
+    'Ballaststoffe und Fermentiertes: Joghurt, Sauerkraut, Kimchi, Vollkorn.',
+    'Leicht und frisch: Der Stoffwechsel läuft jetzt effizient, Salate und mageres Protein passen.',
+    'Vor dem Training Kohlenhydrate: Banane, Hafer, Reis. Du hast die Kraft, nutz sie.'],
+    foods:['Hähnchen','Skyr','Eier','Kimchi','Joghurt','Vollkornreis','Banane']},
+  ovulation:{h:'Peak',tips:[
+    'Antioxidantien: Beeren, dunkles Blattgemüse, Brokkoli. Der Körper arbeitet auf Hochtouren.',
+    'Omega-3: Lachs, Walnüsse, Leinsamen.',
+    'Viel trinken, 2–3 Liter. Leistung hängt am Wasserhaushalt, gerade an PR-Tagen.',
+    'Zink für Haut und Hormone: Kürbiskerne, Eier, Rindfleisch.'],
+    foods:['Beeren','Lachs','Avocado','Walnüsse','Brokkoli','Leinsamen','Eier']},
+  luteal:{h:'Halten',tips:[
+    'Komplexe Kohlenhydrate: Süßkartoffel, Hafer, Quinoa. Sie halten Blutzucker und Laune ruhig.',
+    'Magnesium: Nüsse, dunkle Schokolade ab 70 %, Hülsenfrüchte.',
+    'Heißhunger ist normal: Der Grundumsatz liegt jetzt 100–300 kcal höher. Satt essen, nicht kämpfen.',
+    'Weniger Salz und Alkohol, dann speicherst du weniger Wasser.'],
+    foods:['Süßkartoffel','Hafer','Nüsse','Dunkle Schokolade','Quinoa','Lachs','Bohnen']}
+};
 
 // ── ÜBUNGSKATALOG (Stand Charlottes Notion-Log, Oktober 2026) ───────────────
 // k: 'w' = Wdh + kg · 'a' = Wdh + kg Unterstützung (weniger = stärker) · 'bw' = nur Wdh · 't' = Zeit
@@ -826,29 +882,6 @@ function ringSVG(ph, size){
   return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-label="Zyklustag ${ph.cd} von ${L}" style="flex-shrink:0">${out.join('')}</svg>`;
 }
 
-// Zyklus-Balken: ein Balken pro Tag, Höhe folgt der typischen Leistungskurve
-// (niedrig in der Periode, steigend bis zum Eisprung, abfallend in der Lutealphase).
-// Vergangene Tage gedimmt, heute hell, Phasen-Labels unter dem Phasenstart.
-function cycleBars(ph){
-  const L = Math.max(ph.len, ph.cd), R = ph.ranges, ov = R.ovulation[0] + 1;
-  const h = d => {
-    if(d <= R.menstruation[1]) return .32;
-    if(d < ov) return .38 + .62 * (d - R.menstruation[1]) / Math.max(1, ov - R.menstruation[1]);
-    if(d <= R.ovulation[1]) return 1;
-    return Math.max(.4, .78 - .38 * (d - R.ovulation[1]) / Math.max(1, ph.len - R.ovulation[1]));
-  };
-  const keyOf = d => PH_KEYS.find(k => d >= R[k][0] && d <= R[k][1]) || 'luteal';
-  const bars = Array.from({length: L}, (_, i) => {
-    const d = i + 1, k = keyOf(d);
-    const cls = d === ph.cd ? 'now' : d < ph.cd ? 'past' : (k === 'follikel' || k === 'ovulation') ? 'up' : 'down';
-    return `<i class="${cls}" style="height:${Math.round(h(d) * 100)}%"></i>`;
-  }).join('');
-  const tags = {menstruation:'Mens', follikel:'Foll', ovulation:'Ov', luteal:'Luteal'};
-  const labels = PH_KEYS.filter(k => R[k][1] >= R[k][0]).map(k =>
-    `<span class="${k === ph.key ? 'on' : ''}" style="left:${((R[k][0] - 1) / L * 100).toFixed(2)}%">${tags[k]}</span>`).join('');
-  return `<div class="bars" aria-hidden="true">${bars}</div><div class="bar-lbl">${labels}</div>`;
-}
-
 // ════════════════════════════════════════════════════════════════════════════
 // WORKOUT-DRAFT
 // ════════════════════════════════════════════════════════════════════════════
@@ -947,14 +980,14 @@ function applyPhColors(){
 
 function go(tab){ S.ui.tab = tab; flash = null; saveSoon(); render(); }
 
-const TABS = [['home','Heute'],['week','Woche'],['cycle','Zyklus'],['history','Historie']];
+const TABS = [['home','Heute'],['week','Woche'],['cycle','Zyklus'],['food','Essen'],['history','Historie']];
 
 function render(){
   applyPhColors();
   const tab = S.ui.tab;
   $('app').innerHTML = `<div id="M" class="scroll"><div id="banner"></div><div id="C"></div></div>`;
   ({home: rHome, week: rWeek, cycle: rCycle, history: rHistory, workout: rWorkout, done: rDone,
-    wkedit: rEditor, activity: rActivity, session: rSession}[tab] || rHome)($('C'));
+    wkedit: rEditor, activity: rActivity, session: rSession, food: rFood}[tab] || rHome)($('C'));
   renderBanner();
   if(tab !== 'done'){
     const cur = {workout: 'home', activity: 'home', wkedit: 'week', session: 'history'}[tab] || tab;
@@ -1003,8 +1036,8 @@ function rHome(el){
   else if(ph.stale) phHTML = periodAskCard(`Dein letzter Eintrag ist ${ph.cd - 1} Tage her. Wann war die letzte Periode?`);
   else phHTML = `
     <p class="lbl" style="color:var(--ph-text)">${ph.lb}${ph.overdue ? ' · überfällig?' : ''}</p>
-    <div class="cday"><span class="disp">${pad(ph.cd)}</span><span class="of">/ ${ph.len}</span></div>
-    ${cycleBars(ph)}`;
+    <div class="cyc"><span class="disp">${pad(ph.cd)}</span><span class="of">/ ${ph.len}</span></div>
+    ${cycleStrip(ph)}`;
 
   // Wochenplan zuerst, dann Phasen-Empfehlung
   const planned = plan[td];
@@ -1020,26 +1053,39 @@ function rHome(el){
       <p class="go">Weiter ${icon('arrowR')}</p></button>`;
   })() : '';
 
-  const hero = a ? '' : first ? `<button class="hero sec" data-act="start" data-v="${first}">
-    <p class="lbl">${first === planned ? 'Heute geplant' : 'Heute dran'} · ${W[first].dur} min</p>
-    <p class="t1">${esc(W[first].lb)}</p>
-    <p class="go">Starten ${icon('arrowR')}</p></button>`
-    : `<button class="hero sec" data-act="editWorkout" data-v=""><p class="lbl">Noch kein Workout</p>
-      <p class="t1">Leg dein erstes an</p><p class="go">Los geht’s ${icon('arrowR')}</p></button>`;
-  const others = (a ? order : rest).map(wid => `<button class="wcard sm" data-act="start" data-v="${wid}">
-    <b>${esc(W[wid].lb)}</b></button>`).join('');
+  // Warum dieses Workout heute: Phasen-Text für Glutes/Pull/Push, sonst der allgemeine Phasen-Fokus
+  const why = okPh && first ? (ph.rec[first] || ph.focus[0][1]) : '';
+  const hero = a ? '' : first ? `<button class="hero slim sec" data-act="start" data-v="${first}">
+    <p class="lbl">${first === planned ? 'Heute geplant' : 'Empfohlen'} · ${W[first].dur} min</p>
+    <div class="row"><p class="t1">${esc(W[first].lb)}</p><span class="go">${icon('arrowR', 28)}</span></div>
+    ${why ? `<p class="why">${why}</p>` : ''}</button>`
+    : `<button class="hero slim sec" data-act="editWorkout" data-v=""><p class="lbl">Noch kein Workout</p>
+      <div class="row"><p class="t1">Leg dein erstes an</p><span class="go">${icon('arrowR', 28)}</span></div></button>`;
+  const others = (a ? order : rest).map(wid => `<button class="chip" data-act="start" data-v="${wid}">${esc(W[wid].lb)}</button>`).join('');
 
   el.innerHTML = `
-    <div class="top"><span style="color:var(--c200)">${mark(32)}</span>
-      <span class="sub" style="color:var(--c200)">${new Date().toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'}).replace('.,', ',')}</span></div>
+    <div class="top"><span style="color:var(--c200)">${mark(28)}</span>
+      <span class="sub">${new Date().toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'}).replace('.,', ',')}</span></div>
     ${phHTML}
-    ${ph && ph.stale || !ph ? '' : `<p class="coach sec">${coach}</p>`}
+    <p class="coach">${coach}</p>
+    ${okPh ? `<div class="focus">${ph.focus.map(([k, t]) => `<span class="lbl">${k}</span><p>${t}</p>`).join('')}</div>` : ''}
     ${resume}
     ${hero}
-    <div class="grid2" style="margin-top:8px">${others}</div>
-    <button class="btn2 sec" data-act="go" data-v="activity">Andere Aktivität eintragen ${icon('plus')}</button>
-    ${okPh ? `<button class="btn2" style="margin-top:8px" data-act="periodToday">Periode gestartet</button>` : ''}
+    ${others ? `<div class="chips" style="margin-top:8px">${others}</div>` : ''}
+    <div class="links sec">
+      <button class="btn3" data-act="go" data-v="activity">${icon('plus', 18)} Aktivität</button>
+      ${okPh ? `<button class="btn3" data-act="periodToday">Periode gestartet</button>` : ''}
+    </div>
     ${backupHint()}`;
+}
+
+// Ein Streifen, vier Segmente in Phasenlänge, aktuelle Phase hell, Block markiert heute
+function cycleStrip(ph){
+  const L = Math.max(ph.len, ph.cd), R = ph.ranges;
+  const segs = PH_KEYS.filter(k => R[k][1] >= R[k][0]).map(k =>
+    `<i class="${k === ph.key && !ph.overdue ? 'on' : ''}" style="flex:${R[k][1] - R[k][0] + 1}"></i>`).join('');
+  const pos = ((Math.min(ph.cd, L) - 0.5) / L * 100).toFixed(2);
+  return `<div class="strip" aria-hidden="true">${segs}<b style="left:${pos}%"></b></div>`;
 }
 
 // Dezenter Hinweis, wenn eigene Sessions da sind und das Backup fehlt oder älter als 30 Tage ist
@@ -1048,7 +1094,7 @@ function backupHint(){
   if(own < 3) return '';
   const lb = S.meta.lastBackup, age = lb ? daysBetween(lb.slice(0, 10), today()) : null;
   if(lb && age <= 30) return '';
-  return `<button class="btn3 center" style="width:100%;margin-top:8px" data-act="go" data-v="history">${lb ? `Letztes Backup vor ${age} Tagen` : 'Noch kein Backup'} · jetzt sichern</button>`;
+  return `<button class="btn3" style="margin-top:8px" data-act="go" data-v="history">${lb ? `Letztes Backup vor ${age} Tagen` : 'Noch kein Backup'} · jetzt sichern</button>`;
 }
 
 // ── WOCHE ────────────────────────────────────────────────────────────────────
@@ -1110,6 +1156,31 @@ function rCycle(el){
       <button class="btn2" style="margin-top:8px" data-act="syncText">Übernehmen</button>
     </details>
     <p class="tiny sec" style="text-align:center">Die Prognose ist eine Trainingshilfe, keine Verhütung und keine Diagnose.</p>`;
+}
+
+// ── ESSEN ────────────────────────────────────────────────────────────────────
+function rFood(el){
+  const ph = getPhase(), ok = ph && !ph.stale;
+  const cur = ok ? ph.key : null;
+  const block = (k, open) => { const n = NUTRI[k], p = PH[k]; return `
+    <details class="sec"${open ? ' open' : ''}>
+      <summary class="lbl" style="min-height:44px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:${k === cur ? 'var(--ph-text)' : 'var(--c300)'}">
+        <span>${p.lb} · ${n.h}${k === cur ? ' · jetzt' : ''}</span>${icon('chevron', 18)}</summary>
+      <div class="stack" style="margin-top:12px">${n.tips.map(t => `<p class="txt" style="padding-left:14px;border-left:2px solid ${k === cur ? 'var(--ph-line)' : 'var(--b700)'}">${t}</p>`).join('')}</div>
+      <div class="chips" style="margin-top:12px">${n.foods.map(f => `<span class="chip">${f}</span>`).join('')}</div>
+    </details>`; };
+  el.innerHTML = `
+    ${topBar()}
+    <h1 class="t1">Essen</h1>
+    <p class="sub" style="margin-top:4px">${ok ? `${ph.lb}, Tag ${ph.cd}. Das zählt jetzt:` : 'Trag erst deinen Zyklus ein, dann weiß ich, welche Phase dran ist.'}</p>
+    ${PH_KEYS.filter(k => k === cur).map(k => block(k, true)).join('')}
+    ${cur ? `<p class="lbl" style="margin-top:32px">Die anderen Phasen</p>` : ''}
+    ${PH_KEYS.filter(k => k !== cur).map(k => block(k, false)).join('')}
+    <div class="card sec">
+      <p class="lbl" style="margin-bottom:8px">Jeden Tag</p>
+      <p class="txt">Protein 1,6–2 g pro kg Körpergewicht, verteilt auf den Tag. Nach dem Training eine Portion mit 30–40 g. Genug trinken.</p>
+    </div>
+    <p class="tiny sec" style="text-align:center">Allgemeine Tipps, keine Ernährungsberatung.</p>`;
 }
 
 // ── HISTORIE (einfache Liste, Charts und Insights folgen in Phase 2) ────────
